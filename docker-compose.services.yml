@@ -1,0 +1,21 @@
+networks:
+  cashcontrol-network:
+    name: cashcontrol-network
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: cashcontrol-mysql
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: cashcontrol
+      MYSQL_USER: cashcontrol
+      MYSQL_PASSWORD: cashcontrol
+    volumes:
+      - /opt/docker/cashcontrol/mysql:/var/lib/mysql:delegated
+    networks:
+      - cashcontrol-network
+    ports:
+      - "8972:3306"
+    restart: unless-stopped

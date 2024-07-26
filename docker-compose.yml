@@ -1,0 +1,23 @@
+networks:
+  cashcontrol-network:
+    name: cashcontrol-network
+    external: true
+
+services:
+  php:
+    container_name: cashcontrol-php
+    env_file:
+      - .env
+    networks:
+      - cashcontrol-network
+    restart: unless-stopped
+
+  caddy:
+    container_name: caddy
+    depends_on:
+      - php
+    ports:
+      - "8951:80"
+    networks:
+      - cashcontrol-network
+    restart: unless-stopped
