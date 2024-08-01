@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\Service;
 
@@ -18,20 +20,16 @@ class CurrencyApiClient
 
     public function __construct(
         private readonly HttpClientInterface $httpClient,
-        private readonly LoggerInterface     $logger,
-        private readonly string              $apiUrl,
-        private readonly string              $apiKey,
-    )
-    {
+        private readonly LoggerInterface $logger,
+        private readonly string $apiUrl,
+        private readonly string $apiKey,
+    ) {
         $this->serializer = new Serializer([new ObjectNormalizer()], [new JsonEncoder()]);
     }
 
-    /**
-     * @throws CurrencyApiClientException
-     */
     public function get(CurrencyApiRequest $request): CurrencyApiResponse
     {
-        $this->logger->info("Query params: ", [
+        $this->logger->info('Query params: ', [
             'fromCurrency' => $request->fromCurrency,
             'toCurrency' => $request->toCurrency,
             'amount' => $request->amount,
@@ -50,8 +48,9 @@ class CurrencyApiClient
                         'from' => $request->fromCurrency,
                         'to' => $request->toCurrency,
                         'amount' => $request->amount,
-                    ]
-                ]);
+                    ],
+                ]
+            );
 
             $content = $response->getContent();
         } catch (Throwable $exception) {
