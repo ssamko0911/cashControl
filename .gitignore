@@ -182,3 +182,7 @@ fabric.properties
 ###< symfony/phpunit-bridge ###
 /var/
 /vendor/
+
+###> phpstan/phpstan ###
+phpstan.neon
+###< phpstan/phpstan ###
