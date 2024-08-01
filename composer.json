@@ -97,6 +97,7 @@
         "symfony/maker-bundle": "^1.53",
         "symfony/phpunit-bridge": "^7.0",
         "symfony/web-profiler-bundle": "7.0.*",
+        "symplify/easy-coding-standard": "^12.3",
         "zenstruck/foundry": "^2.0"
     }
 }
