@@ -2,9 +2,9 @@
 
 namespace App\Service;
 
-use App\Entity\CurrencyApiResponse;
 use App\Exception\CurrencyApiClientException;
 use App\Request\CurrencyApiRequest;
+use App\Response\CurrencyApiResponse;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
@@ -40,13 +40,18 @@ class CurrencyApiClient
         try {
             $response = $this->httpClient->request(
                 'GET',
-                "$this->apiUrl"
-                . "?api_key=$this->apiKey&from="
-                . "$request->fromCurrency&to="
-                . "$request->toCurrency&amount="
-                . "$request->amount&format="
-                . "json"
-            );
+                $this->apiUrl,
+                [
+                    'headers' => [
+                        'Accept' => 'application/json',
+                    ],
+                    'query' => [
+                        'api_key' => $this->apiKey,
+                        'from' => $request->fromCurrency,
+                        'to' => $request->toCurrency,
+                        'amount' => $request->amount,
+                    ]
+                ]);
 
             $content = $response->getContent();
         } catch (Throwable $exception) {

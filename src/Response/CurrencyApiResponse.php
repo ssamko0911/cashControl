@@ -1,11 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace App\Entity;
+namespace App\Response;
 
-class CurrencyApiResponse
+final class CurrencyApiResponse
 {
     public string $base_currency_code;
     public string $base_currency_name;
     public string $amount;
+
+    /** @var array<string, string[]> */
     public array $rates;
 }
