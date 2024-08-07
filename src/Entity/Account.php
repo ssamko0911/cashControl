@@ -6,10 +6,15 @@ namespace App\Entity;
 
 use App\Entity\Enum\AccountTypeEnum;
 use App\Repository\AccountRepository;
+use App\Repository\TransactionRepository;
+use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Money\Money;
 
+#[ORM\HasLifecycleCallbacks]
 #[ORM\Entity(repositoryClass: AccountRepository::class)]
 class Account
 {
@@ -26,6 +31,21 @@ class Account
 
     #[ORM\Column(type: 'money')]
     private Money $total;
+
+    #[ORM\Column(type: 'datetime')]
+    private DateTime $createdAt;
+
+    #[ORM\Column(type: 'datetime')]
+    private DateTime $updatedAt;
+
+    //TODO: add helper methods;
+    #[ORM\OneToMany(mappedBy: 'account', targetEntity: Transaction::class, cascade: ['persist'])]
+    private Collection $transactions;
+
+    public function __construct()
+    {
+        $this->transactions = new ArrayCollection();
+    }
 
     public function getAccountType(): AccountTypeEnum
     {
@@ -69,6 +89,41 @@ class Account
     {
         $this->id = $id;
         return $this;
+    }
+
+    public function getCreatedAt(): DateTime
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(DateTime $createdAt): Account
+    {
+        $this->createdAt = $createdAt;
+        return $this;
+    }
+
+    public function getUpdatedAt(): DateTime
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(DateTime $updatedAt): Account
+    {
+        $this->updatedAt = $updatedAt;
+        return $this;
+    }
+
+    #[ORM\PrePersist]
+    public function setCreatedAtValue(): void
+    {
+        $this->createdAt = new DateTime('now');
+    }
+
+    #[ORM\PreUpdate]
+    #[ORM\PrePersist]
+    public function setUpdatedAtValue(): void
+    {
+        $this->updatedAt = new DateTime('now');
     }
 }
 
