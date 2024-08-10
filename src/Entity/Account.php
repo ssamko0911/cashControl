@@ -125,5 +125,21 @@ class Account
     {
         $this->updatedAt = new DateTime('now');
     }
-}
 
+    public function addTransaction(Transaction $transaction): self
+    {
+        if(!$this->transactions->contains($transaction)) {
+            $this->transactions->add($transaction);
+        }
+
+        //$transaction->setAccount($this);
+
+        return $this;
+    }
+
+    /** @return Collection<int, Transaction> */
+    public function getTransactions(): Collection
+    {
+        return $this->transactions;
+    }
+}

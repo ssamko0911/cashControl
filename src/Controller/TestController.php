@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Entity\Account;
 use App\Entity\Enum\AccountTypeEnum;
+use App\Entity\Enum\TransactionType;
+use App\Entity\Transaction;
 use App\Repository\AccountRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Money\Currency;
@@ -30,6 +32,7 @@ class TestController extends AbstractController
         $account
             ->setAccountType(AccountTypeEnum::TYPE_DEBIT)
             ->setDescription('Test Account')
+            ->addTransaction($this->getTransaction())
             ->setTotal(
                 new Money(200,
                     new Currency('EUR')));
@@ -37,10 +40,17 @@ class TestController extends AbstractController
         $this->entityManager->persist($account);
         $this->entityManager->flush();
 
-        $accountFromRepo = $this->accountRepository->findOneBy([
-            'accountType' => AccountTypeEnum::TYPE_DEBIT->value
-        ]);
+        $accountFromRepo = $this->accountRepository->findall();
 
         return $this->json($accountFromRepo);
+    }
+
+    private function getTransaction(): Transaction
+    {
+        return (new Transaction())
+            ->setAmount(new Money(20,
+                new Currency('EUR')))
+            ->setDescription('Test Transaction')
+            ->setType(TransactionType::TYPE_EXPENSE);
     }
 }

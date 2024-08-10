@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Entity;
 
+use App\Entity\Enum\TransactionType;
 use App\Repository\TransactionRepository;
 use Doctrine\DBAL\Types\Types;
 use Money\Money;
@@ -31,8 +32,12 @@ class Transaction
     #[ORM\Column(type: 'datetime')]
     private DateTime $updatedAt;
 
-    #[ORM\ManyToOne(targetEntity: Transaction::class, inversedBy: 'transactions')]
+    #[ORM\ManyToOne(targetEntity: Account::class, inversedBy: 'transactions')]
+    #[ORM\JoinColumn(nullable: false)]
     private Account $account;
+
+    #[ORM\Column(type: Types::STRING, enumType: TransactionType::class)]
+    private TransactionType $type;
 
     #[ORM\PrePersist]
     public function setCreatedAtValue(): void
@@ -99,6 +104,28 @@ class Transaction
     public function setUpdatedAt(DateTime $updatedAt): Transaction
     {
         $this->updatedAt = $updatedAt;
+        return $this;
+    }
+
+    public function getAccount(): Account
+    {
+        return $this->account;
+    }
+
+    public function setAccount(Account $account): Transaction
+    {
+        $this->account = $account;
+        return $this;
+    }
+
+    public function getType(): TransactionType
+    {
+        return $this->type;
+    }
+
+    public function setType(TransactionType $type): Transaction
+    {
+        $this->type = $type;
         return $this;
     }
 }
