@@ -1,0 +1,9 @@
+parameters:
+    level: 8
+    phpVersion: 80300
+    inferPrivatePropertyTypeFromConstructor: true
+    bootstrapFiles:
+        - vendor/autoload.php
+    paths:
+        - src
+        - tests

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\Controller;
 
@@ -17,9 +19,8 @@ class CurrencyExchangeController extends AbstractController
 {
     public function __construct(
         private readonly CurrencyApiClient $apiClient,
-        private readonly LoggerInterface   $logger
-    )
-    {
+        private readonly LoggerInterface $logger
+    ) {
     }
 
     #[Route('/exchange', name: 'currencyExchange', methods: [Request::METHOD_GET])]

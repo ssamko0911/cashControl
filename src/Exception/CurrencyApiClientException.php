@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\Exception;
 
@@ -9,7 +11,8 @@ class CurrencyApiClientException extends Exception
 {
     public string $publicMessage = 'Sorry, we are unable to process your request. Please try again later.';
 
-    public function __construct(string $message, int $code, Throwable $previous = null){
+    public function __construct(string $message, int $code, Throwable $previous = null)
+    {
         parent::__construct($message, $code, $previous);
     }
 }
