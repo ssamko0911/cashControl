@@ -132,7 +132,7 @@ class Account
             $this->transactions->add($transaction);
         }
 
-        //$transaction->setAccount($this);
+        $transaction->setAccount($this);
 
         return $this;
     }
