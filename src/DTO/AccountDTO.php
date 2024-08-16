@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\DTO;
 
 use App\Entity\Enum\AccountTypeEnum;
 use App\Security\AccessGroup;
 use DateTime;
-use Money\Money;
 use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 final class AccountDTO
 {
@@ -15,13 +17,19 @@ final class AccountDTO
         AccessGroup::ACCOUNT_CREATE,
         AccessGroup::ACCOUNT_EDIT
     ])]
+    #[Assert\NotBlank(
+        groups: [
+            AccessGroup::ACCOUNT_CREATE,
+            AccessGroup::ACCOUNT_EDIT,
+        ]
+    )]
     public string $description;
 
     #[Groups([
         AccessGroup::ACCOUNT_READ,
         AccessGroup::ACCOUNT_CREATE,
     ])]
-    public Money $total;
+    public MoneyDTO $total;
 
     #[Groups([
         AccessGroup::ACCOUNT_READ,
