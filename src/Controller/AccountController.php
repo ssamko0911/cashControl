@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
 
+#[Route(path: '/account')]
 final class AccountController extends AbstractController
 {
     public function __construct(
@@ -22,7 +23,7 @@ final class AccountController extends AbstractController
     ) {
     }
 
-    #[Route(path: 'acc', name: 'acc', methods: ['POST'])]
+    #[Route(path: '', name: 'app_account_create', methods: ['POST'])]
     public function createAccount(
         #[MapRequestPayload(
             serializationContext: [
