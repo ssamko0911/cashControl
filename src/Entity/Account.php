@@ -16,7 +16,7 @@ use Money\Money;
 
 #[ORM\HasLifecycleCallbacks]
 #[ORM\Entity(repositoryClass: AccountRepository::class)]
-class Account
+class Account implements EntityInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
