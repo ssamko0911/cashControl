@@ -6,14 +6,21 @@ namespace App\Builder;
 
 use App\DTO\AccountDTO;
 use App\DTO\CurrencyDTO;
+use App\DTO\DTOInterface;
 use App\DTO\MoneyDTO;
 use App\Entity\Account;
+use App\Entity\EntityInterface;
 use Money\Currency;
 use Money\Money;
 
-final readonly class AccountEntityBuilder
+final readonly class AccountEntityBuilder implements BuilderInterface
 {
-    public function buildFromDTO(AccountDTO $dto): Account
+    /**
+     * @param AccountDTO $dto
+     * @param Account|null $entity
+     * @return Account
+     */
+    public function buildFromDTO(DTOInterface $dto, ?EntityInterface $entity = null): Account
     {
         return (new Account())
             ->setDescription($dto->description)
@@ -26,24 +33,28 @@ final readonly class AccountEntityBuilder
             ->setAccountType($dto->accountType);
     }
 
-    public function buildDTO(Account $account): AccountDTO
+    /**
+     * @param Account $entity
+     * @return AccountDTO
+     */
+    public function buildDTO(EntityInterface $entity): AccountDTO
     {
         $dto = new AccountDTO();
-        $dto->accountType = $account->getAccountType();
-        $dto->description = $account->getDescription();
+        $dto->accountType = $entity->getAccountType();
+        $dto->description = $entity->getDescription();
 
         $currencyDto = new CurrencyDTO();
-        $currencyDto->code = $account->getTotal()->getCurrency()->getCode();
+        $currencyDto->code = $entity->getTotal()->getCurrency()->getCode();
 
         $total = new MoneyDTO();
-        $total->amount = $account->getTotal()->getAmount();
+        $total->amount = $entity->getTotal()->getAmount();
 
         $total->currency = $currencyDto;
 
         $dto->total = $total;
-        $dto->createdAt = $account->getCreatedAt();
-        $dto->updatedAt = $account->getUpdatedAt();
-        $dto->id = $account->getId();
+        $dto->createdAt = $entity->getCreatedAt();
+        $dto->updatedAt = $entity->getUpdatedAt();
+        $dto->id = $entity->getId();
 
         return $dto;
     }
