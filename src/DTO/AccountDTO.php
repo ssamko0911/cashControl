@@ -10,8 +10,15 @@ use DateTime;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
-final class AccountDTO
+final class AccountDTO implements DTOInterface
 {
+    #[Groups([
+        AccessGroup::ACCOUNT_READ,
+        AccessGroup::TRANSACTION_CREATE,
+        AccessGroup::TRANSACTION_EDIT,
+    ])]
+    public int $id;
+
     #[Groups([
         AccessGroup::ACCOUNT_READ,
         AccessGroup::ACCOUNT_CREATE,
@@ -36,11 +43,6 @@ final class AccountDTO
         AccessGroup::ACCOUNT_CREATE
     ])]
     public AccountTypeEnum $accountType;
-
-    #[Groups([
-        AccessGroup::ACCOUNT_READ
-    ])]
-    public int $id;
 
     #[Groups([
         AccessGroup::ACCOUNT_READ,
