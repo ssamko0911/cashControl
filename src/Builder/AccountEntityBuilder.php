@@ -13,16 +13,16 @@ use App\Entity\EntityInterface;
 use Money\Currency;
 use Money\Money;
 
-final readonly class AccountEntityBuilder implements BuilderInterface
+final readonly class AccountEntityBuilder
 {
     /**
      * @param AccountDTO $dto
-     * @param Account|null $entity
      * @return Account
      */
-    public function buildFromDTO(DTOInterface $dto, ?EntityInterface $entity = null): Account
+    public function buildFromDTO(AccountDTO $dto): Account
     {
         return (new Account())
+            ->setName($dto->name)
             ->setDescription($dto->description)
             ->setTotal(
                 new Money(
@@ -37,9 +37,10 @@ final readonly class AccountEntityBuilder implements BuilderInterface
      * @param Account $entity
      * @return AccountDTO
      */
-    public function buildDTO(EntityInterface $entity): AccountDTO
+    public function buildDTO(Account $entity): AccountDTO
     {
         $dto = new AccountDTO();
+        $dto->name = $entity->getName();
         $dto->accountType = $entity->getAccountType();
         $dto->description = $entity->getDescription();
 
