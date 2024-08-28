@@ -5,7 +5,6 @@ namespace App\DTO;
 use App\Entity\Enum\TransactionType;
 use App\Security\AccessGroup;
 use DateTime;
-use Money\Money;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 class TransactionDTO implements DTOInterface
@@ -39,12 +38,12 @@ class TransactionDTO implements DTOInterface
     ])]
     public DateTime $updatedAt;
 
-    #[Groups([
-        AccessGroup::TRANSACTION_READ,
-        AccessGroup::TRANSACTION_CREATE,
-        AccessGroup::TRANSACTION_EDIT,
-    ])]
-    public AccountDTO $account;
+//    #[Groups([
+//        AccessGroup::TRANSACTION_READ,
+//        AccessGroup::TRANSACTION_CREATE,
+//        AccessGroup::TRANSACTION_EDIT,
+//    ])]
+//    public AccountDTO $account;
 
     #[Groups([
         AccessGroup::TRANSACTION_READ,

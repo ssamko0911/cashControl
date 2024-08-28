@@ -24,6 +24,13 @@ final class AccountDTO implements DTOInterface
         AccessGroup::ACCOUNT_CREATE,
         AccessGroup::ACCOUNT_EDIT
     ])]
+    public string $name;
+
+    #[Groups([
+        AccessGroup::ACCOUNT_READ,
+        AccessGroup::ACCOUNT_CREATE,
+        AccessGroup::ACCOUNT_EDIT
+    ])]
     #[Assert\NotBlank(
         groups: [
             AccessGroup::ACCOUNT_CREATE,
