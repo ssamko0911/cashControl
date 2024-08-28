@@ -4,23 +4,23 @@ declare(strict_types=1);
 
 namespace App\Builder;
 
-use App\DTO\DTOInterface;
+use App\DTO\CurrencyDTO;
+use App\DTO\MoneyDTO;
 use App\DTO\TransactionDTO;
 use App\Entity\Account;
-use App\Entity\EntityInterface;
 use App\Entity\Enum\TransactionType;
 use App\Entity\Transaction;
 use Money\Currency;
 use Money\Money;
 
-class TransactionEntityBuilder implements BuilderInterface
+class TransactionEntityBuilder
 {
     /**
      * @param TransactionDTO $dto
      * @param Account $account
-     * @return EntityInterface
+     * @return Transaction
      */
-    public function buildFromDTO(DTOInterface $dto, Account $account): EntityInterface
+    public function buildFromDTO(TransactionDTO $dto, Account $account): Transaction
     {
         $transaction = new Transaction();
 
@@ -41,12 +41,30 @@ class TransactionEntityBuilder implements BuilderInterface
     }
 
     /**
-     * @param Account $entity
-     * @return DTOInterface
+     * @param Transaction $entity
+     * @return TransactionDTO
      */
-    public function buildDTO(EntityInterface $entity): DTOInterface
+    public function buildDTO(Transaction $entity): TransactionDTO
     {
-        // TODO: Implement buildDTO() method by myself;
+        $dto = new TransactionDTO();
+
+        $currencyDto = new CurrencyDTO();
+        $currencyDto->code = $entity->getAmount()->getCurrency()->getCode();
+
+        $amountDTO = new MoneyDTO();
+        $amountDTO->amount = $entity->getAmount()->getAmount();
+        $amountDTO->currency = $currencyDto;
+
+        $dto->amount = $amountDTO;
+        $dto->description = $entity->getDescription();
+        $dto->type = $entity->getType();
+        $dto->createdAt = $entity->getCreatedAt();
+        $dto->updatedAt = $entity->getUpdatedAt();
+
+        //acc?
+        //$dto->account = $entity->getAccount();
+
+        return $dto;
     }
 
     private function updateAccount(Account $account, TransactionDTO $transactionDTO): void
