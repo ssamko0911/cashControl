@@ -16,12 +16,15 @@ use Money\Money;
 
 #[ORM\HasLifecycleCallbacks]
 #[ORM\Entity(repositoryClass: AccountRepository::class)]
-class Account
+class Account implements EntityInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::INTEGER)]
     private int $id;
+
+    #[ORM\Column(type: Types::STRING, unique: true)]
+    private string $name;
 
     #[ORM\Column(enumType: AccountTypeEnum::class)]
     private AccountTypeEnum $accountType;
@@ -45,6 +48,18 @@ class Account
     public function __construct()
     {
         $this->transactions = new ArrayCollection();
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): Account
+    {
+        $this->name = $name;
+
+        return $this;
     }
 
     public function getAccountType(): AccountTypeEnum
@@ -132,7 +147,7 @@ class Account
             $this->transactions->add($transaction);
         }
 
-        //$transaction->setAccount($this);
+        $transaction->setAccount($this);
 
         return $this;
     }

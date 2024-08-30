@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\HasLifecycleCallbacks]
 #[ORM\Entity(repositoryClass: TransactionRepository::class)]
-class Transaction
+class Transaction implements EntityInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -32,7 +32,7 @@ class Transaction
     #[ORM\Column(type: 'datetime')]
     private DateTime $updatedAt;
 
-    #[ORM\ManyToOne(targetEntity: Account::class, inversedBy: 'transactions')]
+    #[ORM\ManyToOne(targetEntity: Account::class, cascade: ['persist'], inversedBy: 'transactions')]
     #[ORM\JoinColumn(nullable: false)]
     private Account $account;
 
