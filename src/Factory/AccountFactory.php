@@ -14,7 +14,7 @@ class AccountFactory extends PersistentProxyObjectFactory
     protected function defaults(): array|callable
     {
         return [
-            'name' => self::faker()->word,
+            'name' => self::faker()->unique()->word,
             'accountType' => self::faker()->randomElement(AccountTypeEnum::cases()),
             'description' => self::faker()->text(100),
             'total' => $this->getMoney(),
