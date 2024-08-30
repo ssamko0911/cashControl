@@ -30,6 +30,26 @@ final class AccountController extends AbstractController
     ) {
     }
 
+    #[Post(
+        summary: 'Create account',
+        tags: ['Accounts'],
+        responses: [
+            new Response(
+                response: HttpResponse::HTTP_CREATED,
+                description: 'Resource created',
+                content: [
+                    new Model(
+                        type: AccountDTO::class,
+                        groups: [AccessGroup::ACCOUNT_READ],
+                    )
+                ]
+            ),
+            new Response(
+                response: HttpResponse::HTTP_BAD_REQUEST,
+                description: 'Bad request',
+            )
+        ]
+    )]
     #[Route(path: '', name: 'app_account_create', methods: ['POST'])]
     public function createAccount(
         #[MapRequestPayload(
@@ -66,7 +86,6 @@ final class AccountController extends AbstractController
             new Response(
                 response: HttpResponse::HTTP_BAD_REQUEST,
                 description: 'Bad request',
-
             )
         ]
     )]
