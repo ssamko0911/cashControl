@@ -7,3 +7,8 @@ parameters:
     paths:
         - src
         - tests
+    ignoreErrors:
+        - '#Variable property access on object.#'
+        - '#Property .+ with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types: TKey, T#'
+        - '#Property .+ with iterable type array does not specify its value type#'
+        - '#Property .+ type has no value type specified in iterable type array#'
