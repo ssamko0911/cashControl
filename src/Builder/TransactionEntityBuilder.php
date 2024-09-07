@@ -13,8 +13,14 @@ use App\Entity\Transaction;
 use Money\Currency;
 use Money\Money;
 
-class TransactionEntityBuilder
+final readonly class TransactionEntityBuilder
 {
+    public function __construct(
+        private AccountEntityBuilder $accountEntityBuilder
+    )
+    {
+    }
+
     /**
      * @param TransactionDTO $dto
      * @param Account $account
@@ -55,14 +61,14 @@ class TransactionEntityBuilder
         $amountDTO->amount = $entity->getAmount()->getAmount();
         $amountDTO->currency = $currencyDto;
 
+        $dto->id = $entity->getId();
         $dto->amount = $amountDTO;
         $dto->description = $entity->getDescription();
         $dto->type = $entity->getType();
         $dto->createdAt = $entity->getCreatedAt();
         $dto->updatedAt = $entity->getUpdatedAt();
 
-        //acc?
-        //$dto->account = $entity->getAccount();
+        $dto->account = $this->accountEntityBuilder->buildDTO($entity->getAccount());
 
         return $dto;
     }
