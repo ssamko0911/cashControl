@@ -8,17 +8,22 @@ use App\Factory\AccountFactory;
 use App\Factory\TransactionFactory;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use Random\RandomException;
 
 class AccountFixtures extends Fixture
 {
+    /**
+     * @throws RandomException
+     */
     public function load(ObjectManager $manager): void
     {
         $accounts = AccountFactory::createMany(10);
 
-        $transactions = TransactionFactory::createMany(40);
-
-        foreach ($transactions as $transaction) {
-            $transaction->object()->setAccount(AccountFactory::randomOrCreate()->object());
+        foreach ($accounts as $account) {
+            $transactionCount = random_int(1, 5);
+            TransactionFactory::createMany($transactionCount, [
+                'account' => $account,
+            ]);
         }
 
         $manager->flush();
