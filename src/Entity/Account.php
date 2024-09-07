@@ -41,8 +41,7 @@ class Account implements EntityInterface
     #[ORM\Column(type: 'datetime')]
     private DateTime $updatedAt;
 
-    //TODO: add helper methods;
-    #[ORM\OneToMany(mappedBy: 'account', targetEntity: Transaction::class, cascade: ['persist'])]
+    #[ORM\OneToMany(mappedBy: 'account', targetEntity: Transaction::class, cascade: ['persist', 'detach'])]
     private Collection $transactions;
 
     public function __construct()
@@ -156,5 +155,25 @@ class Account implements EntityInterface
     public function getTransactions(): Collection
     {
         return $this->transactions;
+    }
+
+    /**
+     * @param Collection<int, Transaction> $transactions
+     * @return self
+     */
+    public function setTransactions(Collection $transactions): self
+    {
+        $this->transactions = $transactions;
+
+        return $this;
+    }
+
+    public function removeTransaction(Transaction $transaction): self
+    {
+        if ($this->transactions->contains($transaction)) {
+            $this->transactions->removeElement($transaction);
+        }
+
+        return $this;
     }
 }
