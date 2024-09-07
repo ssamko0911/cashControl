@@ -8,8 +8,10 @@ use App\Entity\Transaction;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-
-class TransactionRepository extends ServiceEntityRepository
+/**
+ * @extends ServiceEntityRepository<Transaction>
+ */
+final class TransactionRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
