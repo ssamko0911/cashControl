@@ -6,6 +6,7 @@ namespace App\Service;
 
 use App\Entity\Account;
 use App\Repository\TransactionRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 
 final readonly class PaginationService
@@ -22,9 +23,9 @@ final readonly class PaginationService
      * @param int $page
      * @return array<string, array> // TODO: check this doc;
      */
-    public function paginate(Account $account, int $page): array
+    public function paginate(Account $account, int $page, QueryBuilder $qb): array
     {
-        $paginator = new Paginator($this->transactionRepository->getTransactionsByAccountQuery($account));
+        $paginator = new Paginator($qb);
 
         $paginator->getQuery()->setFirstResult(self::ITEMS_PER_PAGE * ($page - 1))->setMaxResults(self::ITEMS_PER_PAGE);
 
