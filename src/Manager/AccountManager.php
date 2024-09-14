@@ -11,13 +11,15 @@ use App\DTO\TransactionDTO;
 use App\Entity\Account;
 use App\Entity\Transaction;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 
 final readonly class AccountManager
 {
     public function __construct(
         private EntityManagerInterface $em,
         private AccountEntityBuilder $accountEntityBuilder,
-        private TransactionEntityBuilder $transactionEntityBuilder
+        private TransactionEntityBuilder $transactionEntityBuilder,
+        private LoggerInterface $logger
     ) {
     }
 
@@ -27,6 +29,12 @@ final readonly class AccountManager
         $this->em->persist($account);
         $this->em->flush();
 
+        $this->logger->info('Account has been created', [
+            'id' => $account->getId(),
+            'name' => $account->getName(),
+            'time' => $account->getCreatedAt(),
+        ]);
+
         return $account;
     }
 
@@ -35,6 +43,13 @@ final readonly class AccountManager
         $transaction = $this->transactionEntityBuilder->buildFromDTO($dto, $account);
         $this->em->persist($transaction);
         $this->em->flush();
+
+        $this->logger->info('Transaction has been created', [
+            'id' => $transaction->getId(),
+            'description' => $transaction->getDescription(),
+            'account id' => $transaction->getAccount()->getId(),
+            'time' => $transaction->getCreatedAt(),
+        ]);
 
         return $transaction;
     }
