@@ -73,6 +73,20 @@ final readonly class TransactionEntityBuilder
         return $dto;
     }
 
+    /**
+     * @param Transaction[] $transactions
+     * @return TransactionDTO[]
+     */
+    public function buildDTOs(array $transactions): array
+    {
+        $transactionDtos = [];
+        foreach ($transactions as $transaction) {
+            $transactionDtos[] = $this->buildDTO($transaction);
+        }
+
+        return $transactionDtos;
+    }
+
     private function updateAccount(Account $account, TransactionDTO $transactionDTO): void
     {
 
