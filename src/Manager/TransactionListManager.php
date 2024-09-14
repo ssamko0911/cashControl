@@ -3,10 +3,11 @@
 namespace App\Manager;
 
 use App\Builder\TransactionEntityBuilder;
+use App\DTO\TransactionDTO;
 use App\Entity\Account;
+use App\Entity\Transaction;
 use App\Repository\TransactionRepository;
 use App\Service\PaginationService;
-use DateTimeImmutable;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -22,39 +23,53 @@ final readonly class TransactionListManager
     /**
      * @param Request $request
      * @param Account $account
-     * @return array<string, array> //TODO: Check this on as well;
+     * @return array{data: mixed, meta: array{totalPages: float, totalItems: int<0, max>}}.
      */
     public function getList(Request $request, Account $account): array
     {
-        //TODO: split into smaller chunks;
-        $qb = $this->transactionRepository->createQueryBuilder('t');
+        $qb = $this->getQueryBuilder();
 
-        $this->joinAccount($qb);
-
-        $qb
-            ->where('t.account = :account')
-            ->setParameter('account', $account)
-            ->groupBy('t')
-            ->orderBy('t.id')
-            ->getQuery();
+        $this->buildQuery($qb, $account);
 
         $this->applyDateRangeFilter($qb, $request);
 
+        $this->applySorting($qb, $request);
+
+        //TODO: filtering by ... whatever I want;
+
         $transactions = $this->paginationService->paginate(
-            $account,
             $request->query->getInt('page', 1),
             $qb
         );
 
-        $transactionDtos = [];
-        foreach ($transactions['data'] as $transaction) {
-            $transactionDtos[] = $this->builder->buildDTO($transaction);
+        $transactionDtos = $this->builder->buildDTOs($transactions['data']);
+
+        //TODO: consider the order;
+        if ($request->get('sort') === 'amount') {
+            $this->sortByAmount($transactionDtos);
         }
 
         return [
             'data' => $transactionDtos,
             'meta' => $transactions['meta'],
         ];
+    }
+
+    private function getQueryBuilder(): QueryBuilder
+    {
+        return $this->transactionRepository->createQueryBuilder('t');
+    }
+
+    private function buildQuery(QueryBuilder $qb, Account $entity): void
+    {
+        $this->joinAccount($qb);
+
+        $qb
+            ->where('t.account = :account')
+            ->setParameter('account', $entity)
+            ->groupBy('t')
+            ->orderBy('t.id')
+            ->getQuery();
     }
 
     private function applyDateRangeFilter(QueryBuilder $qb, Request $request): void
@@ -80,5 +95,48 @@ final readonly class TransactionListManager
         if (!in_array('acc', $qb->getAllAliases(), true)) {
             $qb->join(Account::class, 'acc');
         }
+    }
+
+    private function applySorting(QueryBuilder $qb, Request $request): void
+    {
+        $sortField = $request->get('sort');
+        $sortOrder = strtoupper($request->get('order', 'ASC'));
+
+        $validSortFields = [
+            'id',
+            'description',
+            'amount',
+            'createdAt',
+            'type',
+        ];
+
+        $validSortDirections = [
+            'ASC',
+            'DESC',
+        ];
+
+        if (!in_array($sortOrder, $validSortDirections, true)) {
+            $sortOrder = 'ASC';
+        }
+
+        if ($sortField === 'amount') {
+            return;
+        } elseif (in_array($sortField, $validSortFields, true)) {
+            $qb->orderBy('t.'.$sortField, $sortOrder);
+        } else {
+            $qb->orderBy('t.id', 'ASC');
+        }
+    }
+
+    /**
+     * @param TransactionDTO[] $transactionDTOs
+     * @return void
+     */
+    private function sortByAmount(array $transactionDTOs): void
+    {
+        //TODO: make it working properly;
+        usort($transactionDTOs, function (TransactionDTO $a, TransactionDTO $b) {
+            return intval($a->amount->amount) - intval($b->amount->amount);
+        });
     }
 }
