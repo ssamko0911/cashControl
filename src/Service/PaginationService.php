@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Entity\Account;
+use App\Entity\Transaction;
 use App\Repository\TransactionRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 
 final readonly class PaginationService
 {
-    private const int ITEMS_PER_PAGE = 3;
+    private const int ITEMS_PER_PAGE = 5;
 
     public function __construct(
         private TransactionRepository $transactionRepository
@@ -19,11 +20,11 @@ final readonly class PaginationService
     }
 
     /**
-     * @param Account $account
      * @param int $page
-     * @return array<string, array> // TODO: check this doc;
+     * @param QueryBuilder $qb
+     * @return array{data: mixed, meta: array{totalPages: float, totalItems: int<0, max>}}
      */
-    public function paginate(Account $account, int $page, QueryBuilder $qb): array
+    public function paginate(int $page, QueryBuilder $qb): array
     {
         $paginator = new Paginator($qb);
 
