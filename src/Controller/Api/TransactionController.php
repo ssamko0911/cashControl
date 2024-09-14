@@ -114,6 +114,37 @@ class TransactionController extends AbstractController
                 in: 'query',
                 schema: new Schema(type: 'integer', default: 1)
             ),
+            new Parameter(
+                name: 'order',
+                description: 'Order to sort by, ascending (asc) or descending (desc)',
+                in: 'query',
+                required: false,
+                schema: new Schema(
+                    type: 'string',
+                    default: 'ASC',
+                    enum: [
+                        'ASC',
+                        'DESC',
+                    ]
+                )
+            ),
+            new Parameter(
+                name: 'sort',
+                description: 'Field to sort by',
+                in: 'query',
+                required: false,
+                schema: new Schema(
+                    type: 'string',
+                    default: 'id',
+                    enum: [
+                        'id',
+                        'description',
+                        'amount',
+                        'createdAt',
+                        'type',
+                    ]
+                )
+            ),
         ],
         responses: [
             new Response(
