@@ -35,6 +35,8 @@ final readonly class TransactionListManager
 
         $this->applySorting($qb, $request);
 
+        $this->applySearchFilter($qb, $request);
+
         //TODO: filtering by ... whatever I want;
 
         $transactions = $this->paginationService->paginate(
@@ -132,11 +134,20 @@ final readonly class TransactionListManager
      * @param TransactionDTO[] $transactionDTOs
      * @return void
      */
-    private function sortByAmount(array $transactionDTOs): void
+    private function sortByAmount(array &$transactionDTOs): void
     {
-        //TODO: make it working properly;
         usort($transactionDTOs, function (TransactionDTO $a, TransactionDTO $b) {
             return intval($a->amount->amount) - intval($b->amount->amount);
         });
+    }
+
+    private function applySearchFilter(QueryBuilder $qb, Request $request): void
+    {
+        $searchTerm = $request->get('search');
+
+        if (null !== $searchTerm) {
+            $qb->andWhere('t.description LIKE :searchTerm')
+                ->setParameter('searchTerm', '%' . $searchTerm . '%');
+        }
     }
 }
