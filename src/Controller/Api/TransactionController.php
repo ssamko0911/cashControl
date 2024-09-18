@@ -145,6 +145,11 @@ class TransactionController extends AbstractController
                     ]
                 )
             ),
+            new Parameter(
+                name: 'search',
+                description: 'Search by fields: description',
+                in: 'query'
+            ),
         ],
         responses: [
             new Response(
