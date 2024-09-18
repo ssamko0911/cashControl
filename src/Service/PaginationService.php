@@ -12,7 +12,7 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
 
 final readonly class PaginationService
 {
-    private const int ITEMS_PER_PAGE = 5;
+    private const int ITEMS_PER_PAGE = 3;
 
     public function __construct(
         private TransactionRepository $transactionRepository
