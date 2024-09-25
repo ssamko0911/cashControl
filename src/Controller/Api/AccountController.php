@@ -71,4 +71,12 @@ final class AccountController extends AbstractController
             'groups' => [AccessGroup::ACCOUNT_READ],
         ]);
     }
+
+    #[Route(path: '/{id}', name: 'app_account_get', methods: ['GET'])]
+    public function getAccountById(Account $account): JsonResponse
+    {
+        return $this->json($this->accountEntityBuilder->buildDTO($account), HttpResponse::HTTP_OK, [], [
+            'groups' => [AccessGroup::ACCOUNT_READ],
+        ]);
+    }
 }
