@@ -6,7 +6,6 @@ namespace App\Entity;
 
 use App\Entity\Enum\AccountTypeEnum;
 use App\Repository\AccountRepository;
-use App\Repository\TransactionRepository;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
