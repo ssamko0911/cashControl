@@ -15,4 +15,9 @@ class AccessGroup
     public const string TRANSACTION_READ = 'transaction:read';
     public const string TRANSACTION_EDIT = 'transaction:edit';
     public const string TRANSACTION_CREATE = 'transaction:create';
+
+    // Category
+    public const string CATEGORY_READ = 'category:read';
+    public const string CATEGORY_EDIT = 'category:edit';
+    public const string CATEGORY_CREATE = 'category:create';
 }
