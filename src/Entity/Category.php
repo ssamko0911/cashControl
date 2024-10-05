@@ -25,9 +25,13 @@ class Category
     #[ORM\OneToMany(mappedBy: 'category', targetEntity: Transaction::class)]
     private Collection $transactions;
 
+    #[ORM\OneToMany(mappedBy: 'category', targetEntity: CategoryBudget::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $monthlyBudgets;
+
     public function __construct()
     {
         $this->transactions = new ArrayCollection();
+        $this->monthlyBudgets = new ArrayCollection();
     }
 
     public function getId(): int
@@ -66,6 +70,9 @@ class Category
         return $this;
     }
 
+    /**
+     * @return Collection<int, Transaction>
+     */
     public function getTransactions(): Collection
     {
         return $this->transactions;
@@ -85,6 +92,32 @@ class Category
     {
         if ($this->transactions->contains($transaction)) {
             $this->transactions->removeElement($transaction);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, CategoryBudget>
+     */
+    public function getMonthlyBudgets(): Collection
+    {
+        return $this->monthlyBudgets;
+    }
+
+    public function addMonthlyBudget(CategoryBudget $budget): Category
+    {
+        if (!$this->monthlyBudgets->contains($budget)) {
+            $this->monthlyBudgets->add($budget);
+        }
+
+        return $this;
+    }
+
+    public function removeMonthlyBudget(CategoryBudget $budget): Category
+    {
+        if ($this->monthlyBudgets->contains($budget)) {
+            $this->monthlyBudgets->removeElement($budget);
         }
 
         return $this;
