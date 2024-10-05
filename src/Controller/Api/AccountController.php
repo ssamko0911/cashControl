@@ -5,18 +5,13 @@ declare(strict_types=1);
 namespace App\Controller\Api;
 
 use App\Builder\AccountEntityBuilder;
-use App\Builder\TransactionEntityBuilder;
 use App\DTO\AccountDTO;
-use App\DTO\TransactionDTO;
 use App\Entity\Account;
-use App\Entity\Transaction;
 use App\Manager\AccountManager;
 use App\Security\AccessGroup;
 use Nelmio\ApiDocBundle\Annotation\Model;
-use OpenApi\Attributes\Get;
 use OpenApi\Attributes\Post;
 use OpenApi\Attributes\Response;
-use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
@@ -29,7 +24,6 @@ final class AccountController extends AbstractController
     public function __construct(
         private readonly AccountManager $manager,
         private readonly AccountEntityBuilder $accountEntityBuilder,
-        private readonly TransactionEntityBuilder $transactionEntityBuilder
     ) {
     }
 
