@@ -9,9 +9,15 @@ use DateTimeImmutable;
 use LogicException;
 use Money\Currency;
 use Money\Money;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 final readonly class CategoryEntityBuilder
 {
+    public function __construct(
+        private ParameterBagInterface $params)
+    {
+    }
+
     public function buildFromDTO(CategoryDTO $dto): Category
     {
         $category = (new Category())
@@ -36,6 +42,8 @@ final readonly class CategoryEntityBuilder
             ->setIsOverBudget(false)
             ->setLimit($budgetDTO->limit)
             ->setMonthYear((new DateTimeImmutable()))
-            ->setCurrentSpending(new Money('0', new Currency('USD')));
+            ->setCurrentSpending(new Money('0', new Currency(
+                $this->params->get('default_currency')
+            )));
     }
 }
