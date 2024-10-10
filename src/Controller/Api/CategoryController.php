@@ -6,11 +6,8 @@ namespace App\Controller\Api;
 
 use App\Builder\CategoryEntityBuilder;
 use App\DTO\CategoryDTO;
-use App\DTO\TransactionDTO;
-use App\Entity\Account;
 use App\Manager\CategoryManager;
 use App\Security\AccessGroup;
-use Doctrine\ORM\EntityManagerInterface;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes\Post;
 use OpenApi\Attributes\Response;

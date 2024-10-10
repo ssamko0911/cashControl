@@ -2,7 +2,6 @@
 
 namespace App\Factory;
 
-use App\Entity\Category;
 use App\Entity\CategoryBudget;
 use Money\Currency;
 use Money\Money;
@@ -14,7 +13,7 @@ class CategoryBudgetFactory extends PersistentProxyObjectFactory
     protected function defaults(): array|callable
     {
         return [
-            'limit' => $this->getMoney(),
+            'budgetLimit' => $this->getMoney(),
             'currentSpending' => $this->getMoney(),
         ];
     }

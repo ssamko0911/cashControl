@@ -7,7 +7,6 @@ namespace App\Entity;
 use App\Repository\CategoryBudgetRepository;
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
-use Money\Currency;
 use Money\Money;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -20,7 +19,7 @@ class CategoryBudget
     private int $id;
 
     #[ORM\Column(type: 'money')]
-    private ?Money $limit = null;
+    private ?Money $budgetLimit = null; // THE LIMIT WORD IS RESERVED IN MYSQL
 
     #[ORM\Column(type: Types::STRING)]
     private string $monthYear;
@@ -48,14 +47,14 @@ class CategoryBudget
         return $this;
     }
 
-    public function getLimit(): ?Money
+    public function getBudgetLimit(): ?Money
     {
-        return $this->limit;
+        return $this->budgetLimit;
     }
 
-    public function setLimit(?Money $limit): CategoryBudget
+    public function setBudgetLimit(?Money $budgetLimit): CategoryBudget
     {
-        $this->limit = $limit;
+        $this->budgetLimit = $budgetLimit;
 
         return $this;
     }
@@ -85,7 +84,7 @@ class CategoryBudget
 
     public function isOverBudget(): bool
     {
-        if ($this->currentSpending > $this->limit) {
+        if ($this->currentSpending > $this->budgetLimit) {
             $this->setIsOverBudget(true);
         } else {
             $this->setIsOverBudget(false);

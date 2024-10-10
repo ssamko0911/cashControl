@@ -11,9 +11,9 @@ class CategoryFactory extends PersistentProxyObjectFactory
     protected function defaults(): array|callable
     {
         return [
-            'name' => self::faker()->word(),
+            'name' => self::faker()->unique()->word(),
             'description' => self::faker()->text(100),
-            'monthlyBudget' => CategoryFactory::random()
+            'monthlyBudget' => CategoryBudgetFactory::createOne()
         ];
     }
 

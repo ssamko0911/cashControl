@@ -49,10 +49,10 @@ final readonly class CategoryEntityBuilder
         $categoryBudgetDTO->isOverBudget = $budget->isOverBudget();
 
         $limit = new MoneyDTO();
-        $limit->amount = $budget->getLimit()->getAmount();
+        $limit->amount = $budget->getBudgetLimit()->getAmount();
 
         $currency = new CurrencyDTO();
-        $currency->code = $budget->getLimit()->getCurrency()->getCode();
+        $currency->code = $budget->getBudgetLimit()->getCurrency()->getCode();
 
         $limit->currency = $currency;
         $categoryBudgetDTO->limit = $limit;
@@ -79,7 +79,7 @@ final readonly class CategoryEntityBuilder
 
         return (new CategoryBudget())
             ->setIsOverBudget(false)
-            ->setLimit($budgetDTO->limit)
+            ->setBudgetLimit($budgetDTO->limit)
             ->setCurrentSpending(new Money('0', new Currency(
                 $this->defaultCurrency
             )));
