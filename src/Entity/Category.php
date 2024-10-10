@@ -25,13 +25,12 @@ class Category
     #[ORM\OneToMany(mappedBy: 'category', targetEntity: Transaction::class)]
     private Collection $transactions;
 
-    #[ORM\OneToMany(mappedBy: 'category', targetEntity: CategoryBudget::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
-    private Collection $monthlyBudgets;
+    #[ORM\OneToOne(targetEntity: CategoryBudget::class)]
+    private CategoryBudget|null $monthlyBudget = null;
 
     public function __construct()
     {
         $this->transactions = new ArrayCollection();
-        $this->monthlyBudgets = new ArrayCollection();
     }
 
     public function getId(): int
@@ -70,6 +69,17 @@ class Category
         return $this;
     }
 
+    public function getMonthlyBudget(): ?CategoryBudget
+    {
+        return $this->monthlyBudget;
+    }
+
+    public function setMonthlyBudget(?CategoryBudget $monthlyBudget): Category
+    {
+        $this->monthlyBudget = $monthlyBudget;
+        return $this;
+    }
+
     /**
      * @return Collection<int, Transaction>
      */
@@ -92,32 +102,6 @@ class Category
     {
         if ($this->transactions->contains($transaction)) {
             $this->transactions->removeElement($transaction);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, CategoryBudget>
-     */
-    public function getMonthlyBudgets(): Collection
-    {
-        return $this->monthlyBudgets;
-    }
-
-    public function addMonthlyBudget(CategoryBudget $budget): Category
-    {
-        if (!$this->monthlyBudgets->contains($budget)) {
-            $this->monthlyBudgets->add($budget);
-        }
-
-        return $this;
-    }
-
-    public function removeMonthlyBudget(CategoryBudget $budget): Category
-    {
-        if ($this->monthlyBudgets->contains($budget)) {
-            $this->monthlyBudgets->removeElement($budget);
         }
 
         return $this;
