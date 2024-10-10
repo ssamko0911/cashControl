@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\Entity\Account;
 use App\Entity\Transaction;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
 
-
-class TransactionRepository extends ServiceEntityRepository
+/**
+ * @extends ServiceEntityRepository<Transaction>
+ */
+final class TransactionRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

@@ -39,6 +39,10 @@ class Transaction implements EntityInterface
     #[ORM\Column(type: Types::STRING, enumType: TransactionType::class)]
     private TransactionType $type;
 
+    #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: 'transactions')]
+    #[ORM\JoinColumn(name: 'category_id', referencedColumnName: 'id', nullable: false)]
+    private Category $category;
+
     #[ORM\PrePersist]
     public function setCreatedAtValue(): void
     {
@@ -126,6 +130,18 @@ class Transaction implements EntityInterface
     public function setType(TransactionType $type): Transaction
     {
         $this->type = $type;
+        return $this;
+    }
+
+    public function getCategory(): Category
+    {
+        return $this->category;
+    }
+
+    public function setCategory(Category $category): Transaction
+    {
+        $this->category = $category;
+
         return $this;
     }
 }

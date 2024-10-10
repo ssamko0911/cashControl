@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\DataFixtures;
 
-use App\Factory\AccountFactory;
+use App\Factory\CategoryFactory;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
-class AccountFixtures extends Fixture
+class CategoryFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-        AccountFactory::createMany(10);
+        CategoryFactory::createMany(10);
 
         $manager->flush();
     }

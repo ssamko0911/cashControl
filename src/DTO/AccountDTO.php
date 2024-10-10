@@ -14,15 +14,16 @@ final class AccountDTO implements DTOInterface
 {
     #[Groups([
         AccessGroup::ACCOUNT_READ,
+        AccessGroup::TRANSACTION_READ,
         AccessGroup::TRANSACTION_CREATE,
-        AccessGroup::TRANSACTION_EDIT,
     ])]
     public int $id;
 
     #[Groups([
         AccessGroup::ACCOUNT_READ,
         AccessGroup::ACCOUNT_CREATE,
-        AccessGroup::ACCOUNT_EDIT
+        AccessGroup::ACCOUNT_EDIT,
+        AccessGroup::TRANSACTION_READ,
     ])]
     public string $name;
 
