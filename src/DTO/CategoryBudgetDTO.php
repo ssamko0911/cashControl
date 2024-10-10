@@ -20,7 +20,7 @@ class CategoryBudgetDTO
     #[Groups([
         AccessGroup::CATEGORY_READ,
     ])]
-    public DateTimeImmutable $monthYear;
+    public string $monthYear;
 
     #[Groups([
         AccessGroup::CATEGORY_READ,

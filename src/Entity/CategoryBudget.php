@@ -22,8 +22,8 @@ class CategoryBudget
     #[ORM\Column(type: 'money')]
     private ?Money $limit = null;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    private DateTimeImmutable $monthYear;
+    #[ORM\Column(type: Types::STRING)]
+    private string $monthYear;
 
     #[ORM\Column(type: 'money')]
     private Money $currentSpending;
@@ -31,9 +31,10 @@ class CategoryBudget
     #[ORM\Column(type: Types::BOOLEAN)]
     private bool $isOverBudget = false;
 
-    #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: 'monthlyBudgets')]
-    #[ORM\JoinColumn(name: 'category_id', referencedColumnName: 'id', nullable: false)]
-    private Category $category;
+    public function __construct()
+    {
+        $this->monthYear = (new DateTimeImmutable())->format('F Y');
+    }
 
     public function getId(): int
     {
@@ -59,15 +60,14 @@ class CategoryBudget
         return $this;
     }
 
-    public function getMonthYear(): DateTimeImmutable
+    public function getMonthYear(): string
     {
         return $this->monthYear;
     }
 
-    public function setMonthYear(DateTimeImmutable $monthYear): CategoryBudget
+    public function setMonthYear(string $monthYear): CategoryBudget
     {
         $this->monthYear = $monthYear;
-
         return $this;
     }
 
@@ -97,18 +97,6 @@ class CategoryBudget
     public function setIsOverBudget(bool $isOverBudget): CategoryBudget
     {
         $this->isOverBudget = $isOverBudget;
-
-        return $this;
-    }
-
-    public function getCategory(): Category
-    {
-        return $this->category;
-    }
-
-    public function setCategory(Category $category): CategoryBudget
-    {
-        $this->category = $category;
 
         return $this;
     }

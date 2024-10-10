@@ -21,10 +21,5 @@ final class CategoryDTO
 
     public string $description;
 
-    #[Property(
-        type: 'array',
-        items: new Items(ref: new Model(type: CategoryBudgetDTO::class))
-    )]
-    /** @var CategoryBudgetDTO[] $monthlyBudgets */
-    public array $monthlyBudgets;
+    public CategoryBudgetDTO $monthlyBudget;
 }
