@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace App\DTO;
 
+use App\Entity\Account;
+use App\Entity\EntityInterface;
 use App\Entity\Enum\AccountTypeEnum;
 use App\Security\AccessGroup;
 use DateTime;
 use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Serializer\Attribute\Ignore;
 use Symfony\Component\Validator\Constraints as Assert;
 
 final class AccountDTO implements DTOInterface
@@ -61,4 +64,9 @@ final class AccountDTO implements DTOInterface
         AccessGroup::ACCOUNT_READ,
     ])]
     public DateTime $updatedAt;
+
+    #[Ignore] public function getEntityObject(): EntityInterface
+    {
+        return new Account();
+    }
 }

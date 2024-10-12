@@ -45,30 +45,32 @@ final readonly class CategoryEntityBuilder
 
         $budget = $category->getMonthlyBudget();
 
-        $categoryBudgetDTO = new CategoryBudgetDTO();
-        $categoryBudgetDTO->isOverBudget = $budget->isOverBudget();
+        if (null !== $budget) {
+            $categoryBudgetDTO = new CategoryBudgetDTO();
+            $categoryBudgetDTO->isOverBudget = $budget->isOverBudget();
 
-        $limit = new MoneyDTO();
-        $limit->amount = $budget->getBudgetLimit()->getAmount();
+            $budgetLimit = new MoneyDTO();
+            $budgetLimit->amount = $budget->getBudgetLimit()->getAmount();
 
-        $currency = new CurrencyDTO();
-        $currency->code = $budget->getBudgetLimit()->getCurrency()->getCode();
+            $currency = new CurrencyDTO();
+            $currency->code = $budget->getBudgetLimit()->getCurrency()->getCode();
 
-        $limit->currency = $currency;
-        $categoryBudgetDTO->limit = $limit;
+            $budgetLimit->currency = $currency;
+            $categoryBudgetDTO->budgetLimit = $budgetLimit;
 
-        $categoryBudgetDTO->monthYear = $budget->getMonthYear();
+            $categoryBudgetDTO->monthYear = $budget->getMonthYear();
 
-        $currentSpending = new MoneyDTO();
-        $currentSpending->amount = $budget->getCurrentSpending()->getAmount();
+            $currentSpending = new MoneyDTO();
+            $currentSpending->amount = $budget->getCurrentSpending()->getAmount();
 
-        $currency = new CurrencyDTO();
-        $currency->code = $budget->getCurrentSpending()->getCurrency()->getCode();
+            $currency = new CurrencyDTO();
+            $currency->code = $budget->getCurrentSpending()->getCurrency()->getCode();
 
-        $currentSpending->currency = $currency;
-        $categoryBudgetDTO->currentSpending = $currentSpending;
+            $currentSpending->currency = $currency;
+            $categoryBudgetDTO->currentSpending = $currentSpending;
 
-        $categoryDTO->monthlyBudget = $categoryBudgetDTO;
+            $categoryDTO->monthlyBudget = $categoryBudgetDTO;
+        }
 
         return $categoryDTO;
     }
@@ -77,9 +79,13 @@ final readonly class CategoryEntityBuilder
     {
         $budgetDTO = $categoryDTO->monthlyBudget;
 
+        $budgetLimit = new Money(
+            $budgetDTO->budgetLimit->amount,
+                new Currency($budgetDTO->budgetLimit->currency->code)
+        );
+
         return (new CategoryBudget())
-            ->setIsOverBudget(false)
-            ->setBudgetLimit($budgetDTO->limit)
+            ->setBudgetLimit($budgetLimit)
             ->setCurrentSpending(new Money('0', new Currency(
                 $this->defaultCurrency
             )));

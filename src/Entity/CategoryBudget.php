@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\DTO\CategoryBudgetDTO;
+use App\DTO\DTOInterface;
 use App\Repository\CategoryBudgetRepository;
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
@@ -11,7 +13,7 @@ use Money\Money;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CategoryBudgetRepository::class)]
-class CategoryBudget
+class CategoryBudget implements EntityInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -19,7 +21,7 @@ class CategoryBudget
     private int $id;
 
     #[ORM\Column(type: 'money')]
-    private ?Money $budgetLimit = null; // THE LIMIT WORD IS RESERVED IN MYSQL
+    private ?Money $budgetLimit = null;
 
     #[ORM\Column(type: Types::STRING)]
     private string $monthYear;
@@ -98,5 +100,10 @@ class CategoryBudget
         $this->isOverBudget = $isOverBudget;
 
         return $this;
+    }
+
+    public function getDTO(): DTOInterface
+    {
+        return new CategoryBudgetDTO();
     }
 }

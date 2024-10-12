@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\DTO\CategoryDTO;
+use App\DTO\DTOInterface;
 use App\Repository\CategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -9,7 +11,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
-class Category
+class Category implements EntityInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -25,7 +27,7 @@ class Category
     #[ORM\OneToMany(mappedBy: 'category', targetEntity: Transaction::class)]
     private Collection $transactions;
 
-    #[ORM\OneToOne(targetEntity: CategoryBudget::class)]
+    #[ORM\OneToOne(targetEntity: CategoryBudget::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     private CategoryBudget|null $monthlyBudget = null;
 
     public function __construct()
@@ -105,5 +107,10 @@ class Category
         }
 
         return $this;
+    }
+
+    public function getDTO(): DTOInterface
+    {
+        return new CategoryDTO();
     }
 }

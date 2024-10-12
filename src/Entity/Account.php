@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\DTO\AccountDTO;
+use App\DTO\DTOInterface;
 use App\Entity\Enum\AccountTypeEnum;
 use App\Repository\AccountRepository;
 use DateTime;
@@ -174,5 +176,10 @@ class Account implements EntityInterface
         }
 
         return $this;
+    }
+
+    public function getDTO(): DTOInterface
+    {
+        return new AccountDTO();
     }
 }

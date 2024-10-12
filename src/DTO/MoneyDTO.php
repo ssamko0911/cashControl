@@ -15,6 +15,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
     AccessGroup::TRANSACTION_CREATE,
     AccessGroup::TRANSACTION_EDIT,
     AccessGroup::CATEGORY_READ,
+    AccessGroup::CATEGORY_CREATE,
 ])]
 final class MoneyDTO
 {

@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Response as HttpResponse;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
 
+#[Route(path: '/api')]
 final class CategoryController extends AbstractController
 {
     public function __construct(
@@ -61,7 +62,7 @@ final class CategoryController extends AbstractController
         $category = $this->manager->create($categoryDTO);
 
         return $this->json($this->builder->buildDTO($category), HttpResponse::HTTP_CREATED, [], [
-            'groups' => [AccessGroup::TRANSACTION_READ],
+            'groups' => [AccessGroup::CATEGORY_READ],
         ]);
     }
 }

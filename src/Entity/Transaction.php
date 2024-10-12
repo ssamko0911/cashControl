@@ -4,6 +4,8 @@ declare(strict_types = 1);
 
 namespace App\Entity;
 
+use App\DTO\DTOInterface;
+use App\DTO\TransactionDTO;
 use App\Entity\Enum\TransactionType;
 use App\Repository\TransactionRepository;
 use Doctrine\DBAL\Types\Types;
@@ -143,5 +145,10 @@ class Transaction implements EntityInterface
         $this->category = $category;
 
         return $this;
+    }
+
+    public function getDTO(): DTOInterface
+    {
+        return new TransactionDTO();
     }
 }
