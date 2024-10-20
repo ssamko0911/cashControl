@@ -2,10 +2,13 @@
 
 namespace App\Manager;
 
+use App\DTO\CurrencyDTO;
 use App\DTO\DTOInterface;
+use App\DTO\MoneyDTO;
 use App\DTO\PropertyDTO;
 use App\Entity\EntityInterface;
 use Doctrine\Common\Collections\Collection;
+use Money\Money;
 use Random\RandomException;
 use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
 use Symfony\Component\PropertyInfo\Extractor\SerializerExtractor;
@@ -42,6 +45,15 @@ class AutoMapper
                 $dto->{$property->name} = $this->mapToModel($value, $accessGroup);
             } elseif ($property->transform) {
                 $dto->{$property->name} = $property->transform->getReverseTransform($value);
+            } elseif ($value instanceof Money) {
+                $currencyDto = new CurrencyDTO();
+                $currencyDto->code = $value->getCurrency()->getCode();
+
+                $amountDTO = new MoneyDTO();
+                $amountDTO->amount = $value->getAmount();
+                $amountDTO->currency = $currencyDto;
+
+                $dto->{$property->name} = $amountDTO;
             } else {
                 $dto->{$property->name} = $value;
             }
@@ -90,17 +102,19 @@ class AutoMapper
             $property = new PropertyDTO();
             $property->name = $prop;
             $propertyType = current($reflectionExtractor->getTypes($dto::class, $prop));
-            if (
-                $propertyType->getBuiltinType() === Type::BUILTIN_TYPE_OBJECT
-                && ! enum_exists($propertyType->getClassName()) && new ($propertyType->getClassName())(
-                ) instanceof DTOInterface
-            ) {
-                if ($checkInitialized) {
-                    if ($dto->{$prop} !== null) {
+            if (!$this->isMoneyObject($propertyType)) {
+                if (
+                    $propertyType->getBuiltinType() === Type::BUILTIN_TYPE_OBJECT
+                    && ! enum_exists($propertyType->getClassName()) && new ($propertyType->getClassName())(
+                    ) instanceof DTOInterface
+                ) {
+                    if ($checkInitialized) {
+                        if ($dto->{$prop} !== null) {
+                            $property->dto = true;
+                        }
+                    } else {
                         $property->dto = true;
                     }
-                } else {
-                    $property->dto = true;
                 }
             }
             $list[] = $property;
@@ -122,5 +136,10 @@ class AutoMapper
         }
 
         return $method;
+    }
+
+    private function isMoneyObject(Type $propertyType): bool
+    {
+        return $propertyType->getClassName() === 'Money\Money';
     }
 }
