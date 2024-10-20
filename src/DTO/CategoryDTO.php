@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\DTO;
 
@@ -14,9 +14,12 @@ use Symfony\Component\Serializer\Attribute\Ignore;
     AccessGroup::CATEGORY_CREATE,
     AccessGroup::CATEGORY_READ,
     AccessGroup::CATEGORY_EDIT,
+    AccessGroup::TRANSACTION_READ,
 ])]
 final class CategoryDTO implements DTOInterface
 {
+    public int $id;
+
     public string $name;
 
     public string $description;
