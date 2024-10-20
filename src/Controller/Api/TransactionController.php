@@ -9,6 +9,7 @@ use App\DTO\TransactionDTO;
 use App\Entity\Account;
 use App\Entity\Transaction;
 use App\Manager\AccountManager;
+use App\Manager\AutoMapper;
 use App\Manager\TransactionListManager;
 use App\Security\AccessGroup;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -16,10 +17,12 @@ use OpenApi\Attributes\Get;
 use OpenApi\Attributes\Post;
 use OpenApi\Attributes\Response;
 use OpenApi\Attributes\Schema;
+use Random\RandomException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
+use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
 use OpenApi\Attributes\Parameter;
@@ -29,15 +32,29 @@ class TransactionController extends AbstractController
 {
 
     public function __construct(
-        private readonly AccountManager $manager,
+        private readonly AccountManager           $manager,
         private readonly TransactionEntityBuilder $transactionEntityBuilder,
-        private readonly TransactionListManager $transactionListManager
-    ) {
+        private readonly TransactionListManager   $transactionListManager,
+        private readonly AutoMapper $mapper
+    )
+    {
     }
 
+    /**
+     * @throws \ReflectionException
+     * @throws RandomException
+     */
     #[Post(
         summary: 'Creates transaction',
         tags: ['Transactions'],
+        parameters: [
+            new Parameter(
+                name: 'categoryId',
+                description: 'Category id',
+                in: 'query',
+                schema: new Schema(type: 'integer')
+            ),
+        ],
         responses: [
             new Response(
                 response: HttpResponse::HTTP_CREATED,
@@ -66,13 +83,14 @@ class TransactionController extends AbstractController
             ]
         )]
         TransactionDTO $transactionDTO,
-        Account $account
-    ): JsonResponse {
-        $transaction = $this->manager->saveTransaction($transactionDTO, $account);
+        Account        $account,
+        Request $request
+    ): JsonResponse
+    {
+        $categoryId = intval($request->get('categoryId'));
+        $transaction = $this->manager->saveTransaction($transactionDTO, $categoryId, $account);
 
-        return $this->json($this->transactionEntityBuilder->buildDTO($transaction), HttpResponse::HTTP_CREATED, [], [
-            'groups' => [AccessGroup::TRANSACTION_READ],
-        ]);
+        return $this->json($this->mapper->mapToModel($transaction, AccessGroup::TRANSACTION_READ));
     }
 
     #[Get(

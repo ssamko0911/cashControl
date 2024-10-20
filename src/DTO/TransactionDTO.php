@@ -2,11 +2,13 @@
 
 namespace App\DTO;
 
+use App\Entity\Category;
 use App\Entity\EntityInterface;
 use App\Entity\Enum\TransactionType;
 use App\Entity\Transaction;
 use App\Security\AccessGroup;
 use DateTime;
+use Money\Money;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Serializer\Attribute\Ignore;
 
@@ -52,6 +54,12 @@ class TransactionDTO implements DTOInterface
         AccessGroup::TRANSACTION_EDIT,
     ])]
     public TransactionType $type;
+
+    #[Groups([
+        AccessGroup::TRANSACTION_READ,
+        AccessGroup::TRANSACTION_EDIT,
+    ])]
+    public CategoryDTO $category;
 
     #[Ignore] public function getEntityObject(): EntityInterface
     {
