@@ -26,8 +26,8 @@ final readonly class AccountEntityBuilder
             ->setDescription($dto->description)
             ->setTotal(
                 new Money(
-                    $dto->total->amount,
-                    new Currency($dto->total->currency->code)
+                    $dto->total->getAmount(),
+                    new Currency($dto->total->getCurrency()->getCode())
                 )
             )
             ->setAccountType($dto->accountType);

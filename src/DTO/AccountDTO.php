@@ -9,6 +9,7 @@ use App\Entity\EntityInterface;
 use App\Entity\Enum\AccountTypeEnum;
 use App\Security\AccessGroup;
 use DateTime;
+use Money\Money;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Serializer\Attribute\Ignore;
 use Symfony\Component\Validator\Constraints as Assert;

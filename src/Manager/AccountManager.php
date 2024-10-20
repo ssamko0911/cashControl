@@ -38,9 +38,9 @@ final readonly class AccountManager
         return $account;
     }
 
-    public function saveTransaction(TransactionDTO $dto, Account $account): Transaction
+    public function saveTransaction(TransactionDTO $dto, int $categoryId, Account $account): Transaction
     {
-        $transaction = $this->transactionEntityBuilder->buildFromDTO($dto, $account);
+        $transaction = $this->transactionEntityBuilder->buildFromDTO($dto, $categoryId, $account);
         $this->em->persist($transaction);
         $this->em->flush();
 
