@@ -32,6 +32,9 @@ class CategoryBudget implements EntityInterface
     #[ORM\Column(type: Types::BOOLEAN)]
     private bool $isOverBudget = false;
 
+    #[ORM\OneToOne(inversedBy: 'monthlyBudget', targetEntity: Category::class)]
+    private Category $category;
+
     public function __construct()
     {
         $this->monthYear = (new DateTimeImmutable())->format('F Y');
@@ -105,5 +108,16 @@ class CategoryBudget implements EntityInterface
     public function getDTO(): DTOInterface
     {
         return new CategoryBudgetDTO();
+    }
+
+    public function getCategory(): Category
+    {
+        return $this->category;
+    }
+
+    public function setCategory(Category $category): CategoryBudget
+    {
+        $this->category = $category;
+        return $this;
     }
 }

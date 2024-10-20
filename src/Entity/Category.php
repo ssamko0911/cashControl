@@ -27,7 +27,7 @@ class Category implements EntityInterface
     #[ORM\OneToMany(mappedBy: 'category', targetEntity: Transaction::class)]
     private Collection $transactions;
 
-    #[ORM\OneToOne(targetEntity: CategoryBudget::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OneToOne(mappedBy:'category', targetEntity: CategoryBudget::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     private CategoryBudget|null $monthlyBudget = null;
 
     public function __construct()
@@ -79,6 +79,8 @@ class Category implements EntityInterface
     public function setMonthlyBudget(?CategoryBudget $monthlyBudget): Category
     {
         $this->monthlyBudget = $monthlyBudget;
+        $monthlyBudget?->setCategory($this);
+
         return $this;
     }
 
