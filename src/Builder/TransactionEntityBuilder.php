@@ -9,10 +9,8 @@ use App\DTO\MoneyDTO;
 use App\DTO\TransactionDTO;
 use App\Entity\Account;
 use App\Entity\Category;
-use App\Entity\Enum\TransactionType;
 use App\Entity\Transaction;
 use App\Repository\CategoryRepository;
-use App\Repository\TransactionRepository;
 use Money\Currency;
 use Money\Money;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -20,9 +18,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 final readonly class TransactionEntityBuilder
 {
     public function __construct(
-        private AccountEntityBuilder  $accountEntityBuilder,
-        private CategoryRepository    $categoryRepository,
-        private TransactionRepository $transactionRepository
+        private AccountEntityBuilder $accountEntityBuilder,
+        private CategoryRepository   $categoryRepository,
     )
     {
     }
@@ -55,9 +52,6 @@ final readonly class TransactionEntityBuilder
             )
             ->setCategory($category)
             ->setType($dto->type);
-
-        $this->updateAccount($account, $dto);
-        // TODO: updateMonthlyBudget;
 
         return $transaction;
     }
@@ -101,36 +95,5 @@ final readonly class TransactionEntityBuilder
         }
 
         return $transactionDtos;
-    }
-
-    private function updateAccount(Account $account, TransactionDTO $transactionDTO): void
-    {
-
-        $expenseAmount = new Money(
-            $transactionDTO->amount->amount,
-            new Currency($transactionDTO->amount->currency->code)
-        );
-
-        $accountTotal = $account->getTotal();
-
-        $transactionDTO->type === TransactionType::TYPE_EXPENSE ?
-            $account->setTotal($accountTotal->subtract($expenseAmount))
-            : $account->setTotal($accountTotal->add($expenseAmount));
-    }
-
-    private function updateCategoryBudget(TransactionDTO $transactionDTO, Category $category)
-    {
-        /** @var Transaction|null $previousTransaction */
-        $previousTransaction = $this->transactionRepository->find($transactionDTO->id - 1); // investigate the behaviour on -1 or NULL
-
-        // if we have the same mo => there's no need in updating category budget;
-        // if we have next mo => create category budget (limit => ? null OR from the previous mo);
-    }
-
-    private function differsByOneMonth(DateTimeImmutable $date1, DateTimeImmutable $date2): bool
-    {
-        $interval = $date1->diff($date2);
-        $totalMonths = ($interval->y * 12) + $interval->m;
-        return abs($totalMonths) === 1 && $interval->d === 0;
     }
 }
