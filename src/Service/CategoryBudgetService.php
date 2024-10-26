@@ -9,6 +9,8 @@ use App\Entity\CategoryBudget;
 use App\Entity\Enum\TransactionType;
 use App\Entity\Transaction;
 use App\Repository\CategoryRepository;
+use DateTimeImmutable;
+use Money\Money;
 
 final readonly class CategoryBudgetService
 {
@@ -18,34 +20,34 @@ final readonly class CategoryBudgetService
     {
     }
 
-    public function smth(Transaction $transaction, int $categoryId): void
+    public function update(Transaction $transaction, int $categoryId): void
     {
         /** @var Category $category */
         $category = $this->categoryRepository->find($categoryId);
         $currentCategoryBudget = $category->getMonthlyBudget();
 
-        $newCategoryBudget = $this->getOrCreate($transaction, $currentCategoryBudget);
+        $newCategoryBudget = $this->getOrCreate($transaction, $category, $currentCategoryBudget);
 
-        $this->updateCategoryBudget($newCategoryBudget, $transaction);
+        $this->updateCurrentSpending($newCategoryBudget, $transaction);
     }
 
-    private function getOrCreate(Transaction $transaction, ?CategoryBudget $currentCategoryBudget): CategoryBudget
+    private function getOrCreate(Transaction $transaction, Category $category, ?CategoryBudget $currentCategoryBudget): CategoryBudget
     {
         if (null === $currentCategoryBudget) {
-            return new CategoryBudget();
+            return $this->create($category);
         } else {
             $currentCategoryBudgetMonth = $currentCategoryBudget->getMonthYear();
             $transactionMonthYear = $transaction->getCreatedAt()->format("m Y");
 
             if ($currentCategoryBudgetMonth !== $transactionMonthYear) {
-                return new CategoryBudget();
+                return $this->create($category);
             }
         }
 
         return $currentCategoryBudget;
     }
 
-    private function updateCategoryBudget(CategoryBudget $categoryBudget, Transaction $transaction): void
+    private function updateCurrentSpending(CategoryBudget $categoryBudget, Transaction $transaction): void
     {
         if ($transaction->getType() === TransactionType::TYPE_EXPENSE) {
             $newAmount = $categoryBudget->getCurrentSpending()->add($transaction->getAmount());
@@ -54,9 +56,21 @@ final readonly class CategoryBudgetService
         }
 
         $categoryBudget->setCurrentSpending($newAmount);
+        $this->setIsOverBudget($newAmount, $categoryBudget);
+    }
 
+    private function setIsOverBudget(Money $newAmount, CategoryBudget $categoryBudget): void
+    {
         if ($newAmount->compare($categoryBudget->getBudgetLimit()) >= 0) {
             $categoryBudget->setIsOverBudget(true);
         }
+    }
+
+    private function create(Category $category): CategoryBudget
+    {
+        return (new CategoryBudget())
+            ->setCategory($category)
+            ->setBudgetLimit(null)
+            ->setMonthYear((new DateTimeImmutable())->format('m Y'));
     }
 }
