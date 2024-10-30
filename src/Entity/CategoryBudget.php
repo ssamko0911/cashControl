@@ -87,7 +87,7 @@ class CategoryBudget implements EntityInterface
         return $this;
     }
 
-    public function overBudget(): bool
+    public function isOverBudget(): bool
     {
         if ($this->currentSpending > $this->budgetLimit) {
             $this->setOverBudget(true);
