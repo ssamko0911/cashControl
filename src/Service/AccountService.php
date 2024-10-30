@@ -14,7 +14,6 @@ final readonly class AccountService
 {
     public function update(Account $account, TransactionDTO $transactionDTO): void
     {
-
         $expenseAmount = new Money(
             $transactionDTO->amount->amount,
             new Currency($transactionDTO->amount->currency->code)
