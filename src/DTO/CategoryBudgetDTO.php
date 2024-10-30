@@ -16,21 +16,25 @@ class CategoryBudgetDTO implements DTOInterface
         AccessGroup::CATEGORY_READ,
         AccessGroup::CATEGORY_EDIT,
         AccessGroup::CATEGORY_CREATE,
+        AccessGroup::TRANSACTION_READ,
     ])]
     public ?MoneyDTO $budgetLimit;
 
     #[Groups([
         AccessGroup::CATEGORY_READ,
+        AccessGroup::TRANSACTION_READ,
     ])]
     public string $monthYear;
 
     #[Groups([
         AccessGroup::CATEGORY_READ,
+        AccessGroup::TRANSACTION_READ,
     ])]
     public MoneyDTO $currentSpending;
 
     #[Groups([
         AccessGroup::CATEGORY_READ,
+        AccessGroup::TRANSACTION_READ,
     ])]
     public bool $isOverBudget;
 

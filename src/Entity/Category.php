@@ -27,12 +27,13 @@ class Category implements EntityInterface
     #[ORM\OneToMany(mappedBy: 'category', targetEntity: Transaction::class)]
     private Collection $transactions;
 
-    #[ORM\OneToOne(mappedBy:'category', targetEntity: CategoryBudget::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
-    private CategoryBudget|null $monthlyBudget = null;
+    #[ORM\OneToMany(mappedBy: 'category', targetEntity: CategoryBudget::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $monthlyBudgets;
 
     public function __construct()
     {
         $this->transactions = new ArrayCollection();
+        $this->monthlyBudgets = new ArrayCollection();
     }
 
     public function getId(): int
@@ -71,19 +72,6 @@ class Category implements EntityInterface
         return $this;
     }
 
-    public function getMonthlyBudget(): ?CategoryBudget
-    {
-        return $this->monthlyBudget;
-    }
-
-    public function setMonthlyBudget(?CategoryBudget $monthlyBudget): Category
-    {
-        $this->monthlyBudget = $monthlyBudget;
-        $monthlyBudget?->setCategory($this);
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, Transaction>
      */
@@ -114,5 +102,29 @@ class Category implements EntityInterface
     public function getDTO(): DTOInterface
     {
         return new CategoryDTO();
+    }
+
+    public function addMonthlyBudget(CategoryBudget $budget): Category
+    {
+        if (!$this->monthlyBudgets->contains($budget)) {
+            $this->monthlyBudgets->add($budget);
+            $budget->setCategory($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMonthlyBudget(CategoryBudget $budget): Category
+    {
+        if ($this->monthlyBudgets->contains($budget)) {
+            $this->monthlyBudgets->removeElement($budget);
+        }
+
+        return $this;
+    }
+
+    public function getMonthlyBudgets(): Collection
+    {
+        return $this->monthlyBudgets;
     }
 }

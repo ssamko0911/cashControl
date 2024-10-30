@@ -20,7 +20,7 @@ class CategoryBudget implements EntityInterface
     #[ORM\Column(type: Types::INTEGER)]
     private int $id;
 
-    #[ORM\Column(type: 'money')]
+    #[ORM\Column(type: 'money', nullable: true)]
     private ?Money $budgetLimit = null;
 
     #[ORM\Column(type: Types::STRING)]
@@ -32,7 +32,7 @@ class CategoryBudget implements EntityInterface
     #[ORM\Column(type: Types::BOOLEAN)]
     private bool $isOverBudget = false;
 
-    #[ORM\OneToOne(inversedBy: 'monthlyBudget', targetEntity: Category::class)]
+    #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: 'monthlyBudgets')]
     private Category $category;
 
     public function __construct()
@@ -118,6 +118,7 @@ class CategoryBudget implements EntityInterface
     public function setCategory(Category $category): CategoryBudget
     {
         $this->category = $category;
+
         return $this;
     }
 }

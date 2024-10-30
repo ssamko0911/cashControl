@@ -8,14 +8,19 @@ use App\Entity\Category;
 use App\Entity\CategoryBudget;
 use App\Entity\Enum\TransactionType;
 use App\Entity\Transaction;
+use App\Repository\CategoryBudgetRepository;
 use App\Repository\CategoryRepository;
 use DateTimeImmutable;
+use Doctrine\ORM\EntityManagerInterface;
+use Money\Currency;
 use Money\Money;
 
 final readonly class CategoryBudgetService
 {
     public function __construct(
-        private CategoryRepository $categoryRepository
+        private CategoryRepository $categoryRepository,
+        private CategoryBudgetRepository $categoryBudgetRepository,
+        private EntityManagerInterface $em,
     )
     {
     }
@@ -24,7 +29,7 @@ final readonly class CategoryBudgetService
     {
         /** @var Category $category */
         $category = $this->categoryRepository->find($categoryId);
-        $currentCategoryBudget = $category->getMonthlyBudget();
+        $currentCategoryBudget = $this->categoryBudgetRepository->findOneBy(['monthYear' => (new DateTimeImmutable())->format('F Y')]);
 
         $newCategoryBudget = $this->getOrCreate($transaction, $category, $currentCategoryBudget);
 
@@ -37,7 +42,7 @@ final readonly class CategoryBudgetService
             return $this->create($category);
         } else {
             $currentCategoryBudgetMonth = $currentCategoryBudget->getMonthYear();
-            $transactionMonthYear = $transaction->getCreatedAt()->format("m Y");
+            $transactionMonthYear = $transaction->getCreatedAt()->format("F Y");
 
             if ($currentCategoryBudgetMonth !== $transactionMonthYear) {
                 return $this->create($category);
@@ -61,16 +66,24 @@ final readonly class CategoryBudgetService
 
     private function setIsOverBudget(Money $newAmount, CategoryBudget $categoryBudget): void
     {
-        if ($newAmount->compare($categoryBudget->getBudgetLimit()) >= 0) {
+        if (null !== $categoryBudget->getBudgetLimit() && $newAmount->compare($categoryBudget->getBudgetLimit()) >= 0) {
             $categoryBudget->setIsOverBudget(true);
         }
     }
 
     private function create(Category $category): CategoryBudget
     {
-        return (new CategoryBudget())
-            ->setCategory($category)
+        $budget =  new CategoryBudget();
+        $budget
             ->setBudgetLimit(null)
-            ->setMonthYear((new DateTimeImmutable())->format('m Y'));
+            ->setCurrentSpending(new Money('0', new Currency('UAH')))
+            ->setMonthYear((new DateTimeImmutable())->format('F Y'));
+
+        $category->addMonthlyBudget($budget);
+
+        $this->em->persist($budget);
+        $this->em->flush();
+
+        return $budget;
     }
 }
