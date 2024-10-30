@@ -27,10 +27,10 @@ final readonly class TransactionManager
     {
         $transaction = $this->transactionEntityBuilder->buildFromDTO($transactionDTO, $categoryId, $account);
         $this->em->persist($transaction);
-        $this->em->flush();
 
         $this->categoryBudgetService->update($transaction, $categoryId);
         $this->accountService->update($account, $transactionDTO);
+        $this->em->flush();
 
         $this->logger->info('Transaction has been created', ['id' => $transaction->getId(),
             'description' => $transaction->getDescription(),
