@@ -36,7 +36,7 @@ class CategoryBudgetDTO implements DTOInterface
         AccessGroup::CATEGORY_READ,
         AccessGroup::TRANSACTION_READ,
     ])]
-    public bool $isOverBudget;
+    public bool $overBudget;
 
     #[Ignore] public function getEntityObject(): EntityInterface
     {

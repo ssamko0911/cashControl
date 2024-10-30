@@ -47,7 +47,7 @@ final readonly class CategoryEntityBuilder
 
         if (null !== $budget) {
             $categoryBudgetDTO = new CategoryBudgetDTO();
-            $categoryBudgetDTO->isOverBudget = $budget->isOverBudget();
+            $categoryBudgetDTO->overBudget = $budget->isOverBudget();
 
             $budgetLimit = new MoneyDTO();
             $budgetLimit->amount = $budget->getBudgetLimit()->getAmount();

@@ -30,7 +30,7 @@ class CategoryBudget implements EntityInterface
     private Money $currentSpending;
 
     #[ORM\Column(type: Types::BOOLEAN)]
-    private bool $isOverBudget = false;
+    private bool $overBudget = false;
 
     #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: 'monthlyBudgets')]
     private Category $category;
@@ -87,20 +87,20 @@ class CategoryBudget implements EntityInterface
         return $this;
     }
 
-    public function isOverBudget(): bool
+    public function overBudget(): bool
     {
         if ($this->currentSpending > $this->budgetLimit) {
-            $this->setIsOverBudget(true);
+            $this->setOverBudget(true);
         } else {
-            $this->setIsOverBudget(false);
+            $this->setOverBudget(false);
         }
 
-        return $this->isOverBudget;
+        return $this->overBudget;
     }
 
-    public function setIsOverBudget(bool $isOverBudget): CategoryBudget
+    public function setOverBudget(bool $isOverBudget): CategoryBudget
     {
-        $this->isOverBudget = $isOverBudget;
+        $this->overBudget = $isOverBudget;
 
         return $this;
     }

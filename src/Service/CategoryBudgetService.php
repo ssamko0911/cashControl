@@ -67,7 +67,7 @@ final readonly class CategoryBudgetService
     private function setIsOverBudget(Money $newAmount, CategoryBudget $categoryBudget): void
     {
         if (null !== $categoryBudget->getBudgetLimit() && $newAmount->compare($categoryBudget->getBudgetLimit()) >= 0) {
-            $categoryBudget->setIsOverBudget(true);
+            $categoryBudget->setOverBudget(true);
         }
     }
 
