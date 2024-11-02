@@ -40,13 +40,13 @@ final readonly class CategoryBudgetService
     {
         if (null === $currentCategoryBudget) {
             return $this->create($category);
-        } else {
-            $currentCategoryBudgetMonth = $currentCategoryBudget->getMonthYear();
-            $transactionMonthYear = $transaction->getCreatedAt()->format("F Y");
+        }
 
-            if ($currentCategoryBudgetMonth !== $transactionMonthYear) {
-                return $this->create($category);
-            }
+        $currentCategoryBudgetMonth = $currentCategoryBudget->getMonthYear();
+        $transactionMonthYear = $transaction->getCreatedAt()->format("F Y");
+
+        if ($currentCategoryBudgetMonth !== $transactionMonthYear) {
+            return $this->create($category);
         }
 
         return $currentCategoryBudget;
@@ -61,22 +61,17 @@ final readonly class CategoryBudgetService
         }
 
         $categoryBudget->setCurrentSpending($newAmount);
-        $this->setIsOverBudget($newAmount, $categoryBudget);
-    }
-
-    private function setIsOverBudget(Money $newAmount, CategoryBudget $categoryBudget): void
-    {
-        if (null !== $categoryBudget->getBudgetLimit() && $newAmount->compare($categoryBudget->getBudgetLimit()) >= 0) {
-            $categoryBudget->setOverBudget(true);
-        }
     }
 
     private function create(Category $category): CategoryBudget
     {
         $budget =  new CategoryBudget();
+
+        $money = new Money('0', new Currency('UAH'));
+
         $budget
             ->setBudgetLimit(null)
-            ->setCurrentSpending(new Money('0', new Currency('UAH')))
+            ->setCurrentSpending($money)
             ->setMonthYear((new DateTimeImmutable())->format('F Y'));
 
         $category->addMonthlyBudget($budget);

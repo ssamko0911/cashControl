@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\CategoryBudget;
-use DateTimeImmutable;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
@@ -21,7 +21,7 @@ class CategoryBudgetRepository extends ServiceEntityRepository
     /**
      * @throws NonUniqueResultException
      */
-    public function getByDate(DateTimeImmutable $date): CategoryBudget
+    public function getByDate(DateTime $date): CategoryBudget|null
     {
         $dateAsString = $date->format('F Y');
         $qb = $this->createQueryBuilder('cb');
