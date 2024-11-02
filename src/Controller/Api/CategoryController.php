@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\Response as HttpResponse;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route(path: '/api')]
+#[Route(path: '')]
 final class CategoryController extends AbstractController
 {
     public function __construct(

@@ -26,7 +26,7 @@ use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
 use OpenApi\Attributes\Parameter;
 
-#[Route(path: '/api')]
+#[Route(path: '')]
 class TransactionController extends AbstractController
 {
 

@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\Response as HttpResponse;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route(path: '/api/accounts')]
+#[Route(path: '/accounts')]
 final class AccountController extends AbstractController
 {
     public function __construct(

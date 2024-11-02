@@ -25,4 +25,10 @@ class AccessGroup
     public const string CATEGORY_BUDGET_READ = 'category:budget:read';
     public const string CATEGORY_BUDGET_EDIT = 'category:budget:edit';
     public const string CATEGORY_BUDGET_CREATE = 'category:budget:create';
+
+    //User
+    public const string USER_SIGN = 'user:sign';
+    public const string USER_SIGN_RESPONSE = 'user:sign:response';
+    public const string USER_EDIT = 'user:edit';
+    public const string USER_READ = 'user:read';
 }
