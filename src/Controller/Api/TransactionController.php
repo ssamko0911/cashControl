@@ -86,7 +86,7 @@ class TransactionController extends AbstractController
         Request $request
     ): JsonResponse
     {
-        $categoryId = intval($request->get('categoryId'));
+        $categoryId = (int)$request->get('categoryId');
         $transaction = $this->manager->saveTransaction($transactionDTO, $categoryId, $account);
 
         return $this->json($this->mapper->mapToModel($transaction, AccessGroup::TRANSACTION_READ));
