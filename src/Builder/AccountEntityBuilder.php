@@ -6,10 +6,8 @@ namespace App\Builder;
 
 use App\DTO\AccountDTO;
 use App\DTO\CurrencyDTO;
-use App\DTO\DTOInterface;
 use App\DTO\MoneyDTO;
 use App\Entity\Account;
-use App\Entity\EntityInterface;
 use Money\Currency;
 use Money\Money;
 
