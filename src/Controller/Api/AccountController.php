@@ -11,6 +11,7 @@ use App\Manager\AccountManager;
 use App\Manager\AutoMapper;
 use App\Security\AccessGroup;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use OpenApi\Attributes\Get;
 use OpenApi\Attributes\Post;
 use OpenApi\Attributes\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -68,6 +69,26 @@ final class AccountController extends AbstractController
         ]);
     }
 
+    #[Get(
+        summary: 'Get account',
+        tags: ['Accounts'],
+        responses: [
+            new Response(
+                response: HttpResponse::HTTP_OK,
+                description: 'Successful response',
+                content: [
+                    new Model(
+                        type: AccountDTO::class,
+                        groups: [AccessGroup::ACCOUNT_READ],
+                    ),
+                ]
+            ),
+            new Response(
+                response: HttpResponse::HTTP_BAD_REQUEST,
+                description: 'Bad request',
+            ),
+        ]
+    )]
     #[Route(path: '/{id}', name: 'app_account_get', methods: ['GET'])]
     public function getAccountById(Account $account): JsonResponse
     {
