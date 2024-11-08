@@ -29,7 +29,7 @@ security:
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
             jwt: ~
     access_control:
-        - { path: ^/api/films, roles: ROLE_USER }
+        - { path: ^/api/users, roles: ROLE_USER }
 
 when@test:
     security:

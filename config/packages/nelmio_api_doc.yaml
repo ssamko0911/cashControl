@@ -4,6 +4,47 @@ nelmio_api_doc:
             title: CashControl
             description: Budget app
             version: 1.0.0
+        components:
+            securitySchemes:
+                bearerAuth:
+                    type: http
+                    scheme: bearer
+                    bearerFormat: JWT
+                locale:
+                    type: apiKey
+                    in: header
+                    name: App-Locale
+            schemas:
+                TokenDTO:
+                    type: object
+                    properties:
+                        token:
+                            type: string
+                            example: eyJ0e.....MampjZlOjc
+                        refreshToken:
+                            type: string
+                            example: fe837e130.....6ce7e54466400e6
+            security:
+                - bearerAuth: [ ]
+                - locale: [ ]
+        paths:
+            '/api/login':
+                post:
+                    tags:
+                        - Auth
+                    summary: 'Login a user'
+                    requestBody:
+                        content:
+                            application/json:
+                                schema:
+                                    type: object
+                                    properties:
+                                        email:
+                                            type: string
+                                            example: user4@example.com
+                                        password:
+                                            type: string
+                                            example: 12345_Aa
     areas: # to filter documented areas
         path_patterns:
             - ^/api(?!/doc$) # Accepts routes under /api except /api/doc
