@@ -10,7 +10,7 @@ use Symfony\Component\Serializer\Attribute\Ignore;
 
 class UserDTO implements DTOInterface
 {
-    #[Groups([AccessGroup::USER_READ, AccessGroup::USER_EDIT])]
+    #[Groups([AccessGroup::USER_READ])]
     public ?int $id;
 
     #[Groups([AccessGroup::USER_READ, AccessGroup::USER_EDIT, AccessGroup::USER_SIGN])]
@@ -19,7 +19,7 @@ class UserDTO implements DTOInterface
     #[Groups([AccessGroup::USER_READ, AccessGroup::USER_EDIT, AccessGroup::USER_SIGN])]
     public string $lastName;
 
-    #[Groups([AccessGroup::USER_READ, AccessGroup::USER_SIGN])]
+    #[Groups([AccessGroup::USER_READ, AccessGroup::USER_EDIT, AccessGroup::USER_SIGN])]
     public string $email;
 
     #[Groups([AccessGroup::USER_EDIT, AccessGroup::USER_SIGN])]

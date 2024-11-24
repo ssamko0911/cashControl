@@ -32,4 +32,19 @@ final readonly class UserEntityBuilder
 
         return $user;
     }
+
+    public function updateFromDTO(User $user, UserDTO $dto): void
+    {
+        $user
+            ->setRoles($dto->roles ?? $user->getRoles())
+            ->setEmail($dto->email ?? $user->getEmail())
+            ->setFirstName($dto->firstName ?? $user->getFirstName())
+            ->setLastName($dto->lastName ?? $user->getLastName());
+
+        if (isset($dto->password)) {
+            $user->setPassword(
+                $this->hasher->hashPassword($user, $dto->password)
+            );
+        }
+    }
 }

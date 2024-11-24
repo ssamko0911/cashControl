@@ -35,6 +35,11 @@ class UserManager
         ]);
 
         return $user;
+    }
 
+    public function update(User $user, UserDTO $userDTO): void
+    {
+        $this->userEntityBuilder->updateFromDTO($user, $userDTO);
+        $this->em->flush();
     }
 }
