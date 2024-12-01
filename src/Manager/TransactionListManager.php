@@ -5,7 +5,6 @@ namespace App\Manager;
 use App\Builder\TransactionEntityBuilder;
 use App\DTO\TransactionDTO;
 use App\Entity\Account;
-use App\Entity\Transaction;
 use App\Repository\TransactionRepository;
 use App\Service\PaginationService;
 use Doctrine\ORM\QueryBuilder;
@@ -123,7 +122,9 @@ final readonly class TransactionListManager
 
         if ($sortField === 'amount') {
             return;
-        } elseif (in_array($sortField, $validSortFields, true)) {
+        }
+
+        if (in_array($sortField, $validSortFields, true)) {
             $qb->orderBy('t.'.$sortField, $sortOrder);
         } else {
             $qb->orderBy('t.id', 'ASC');
@@ -136,8 +137,8 @@ final readonly class TransactionListManager
      */
     private function sortByAmount(array &$transactionDTOs): void
     {
-        usort($transactionDTOs, function (TransactionDTO $a, TransactionDTO $b) {
-            return intval($a->amount->amount) - intval($b->amount->amount);
+        usort($transactionDTOs, static function (TransactionDTO $a, TransactionDTO $b): int {
+            return (int)$a->amount->amount - (int)$b->amount->amount;
         });
     }
 
