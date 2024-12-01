@@ -23,7 +23,7 @@ final readonly class TransactionEntityListener
     {
     }
 
-    public function prePersist(Transaction $transaction, PrePersistEventArgs $args): void
+    public function prePersist(PrePersistEventArgs $args): void
     {
         $this->updateOverBudget($args);
     }
