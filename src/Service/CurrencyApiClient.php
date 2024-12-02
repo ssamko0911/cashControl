@@ -8,6 +8,7 @@ use App\Exception\CurrencyApiClientException;
 use App\Request\CurrencyApiRequest;
 use App\Response\CurrencyApiResponse;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
@@ -51,6 +52,10 @@ class CurrencyApiClient
                     ],
                 ]
             );
+
+            if ($response->getStatusCode() !== Response::HTTP_OK) {
+                throw new CurrencyApiClientException('Could not convert currency', Response::HTTP_INTERNAL_SERVER_ERROR);
+            }
 
             $content = $response->getContent();
         } catch (Throwable $exception) {
