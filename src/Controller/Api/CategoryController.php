@@ -6,6 +6,7 @@ namespace App\Controller\Api;
 
 use App\Builder\CategoryEntityBuilder;
 use App\DTO\CategoryDTO;
+use App\Manager\AutoMapper;
 use App\Manager\CategoryManager;
 use App\Security\AccessGroup;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -21,8 +22,8 @@ use Symfony\Component\Routing\Attribute\Route;
 final class CategoryController extends AbstractController
 {
     public function __construct(
-        private readonly CategoryManager $manager,
-        private readonly CategoryEntityBuilder $builder
+        private readonly CategoryManager       $manager,
+        private readonly CategoryEntityBuilder $builder,
     )
     {
     }
@@ -58,7 +59,8 @@ final class CategoryController extends AbstractController
             ]
         )]
         CategoryDTO $categoryDTO,
-    ): JsonResponse {
+    ): JsonResponse
+    {
         $category = $this->manager->create($categoryDTO);
 
         return $this->json($this->builder->buildDTO($category), HttpResponse::HTTP_CREATED, [], [
