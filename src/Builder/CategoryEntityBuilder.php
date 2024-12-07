@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Builder;
 
 use App\DTO\CategoryBudgetDTO;
@@ -8,19 +10,25 @@ use App\DTO\CurrencyDTO;
 use App\DTO\MoneyDTO;
 use App\Entity\Category;
 use App\Entity\CategoryBudget;
+use App\Manager\AutoMapper;
+use App\Security\AccessGroup;
 use DateTimeImmutable;
 use LogicException;
 use Money\Currency;
 use Money\Money;
+use Random\RandomException;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 final readonly class CategoryEntityBuilder
 {
-    private string $defaultCurrency;
-
-    public function __construct(private ParameterBagInterface $params)
+    public function __construct(
+        #[Autowire('%default_currency%')]
+        private string              $defaultCurrency,
+        private readonly AutoMapper $mapper
+    )
     {
-        $this->defaultCurrency = $this->params->get('default_currency');
+
     }
 
     public function buildFromDTO(CategoryDTO $dto): Category
@@ -29,13 +37,15 @@ final readonly class CategoryEntityBuilder
             ->setName($dto->name)
             ->setDescription($dto->description);
 
-        if (isset($dto->monthlyBudget)) {
-            $category->setMonthlyBudget($this->getMonthlyBudget($dto));
-        }
+        $this->setDefaultMonthlyBudget($category);
 
         return $category;
     }
 
+    /**
+     * @throws \ReflectionException
+     * @throws RandomException
+     */
     public function buildDTO(Category $category): CategoryDTO
     {
         $categoryDTO = new CategoryDTO();
@@ -43,51 +53,28 @@ final readonly class CategoryEntityBuilder
         $categoryDTO->name = $category->getName();
         $categoryDTO->description = $category->getDescription();
 
-        $budget = $category->getMonthlyBudget();
+        $budgets = $category->getMonthlyBudgets();
+        $budgetDTOs = [];
 
-        if (null !== $budget) {
-            $categoryBudgetDTO = new CategoryBudgetDTO();
-            $categoryBudgetDTO->overBudget = $budget->isOverBudget();
-
-            $budgetLimit = new MoneyDTO();
-            $budgetLimit->amount = $budget->getBudgetLimit()->getAmount();
-
-            $currency = new CurrencyDTO();
-            $currency->code = $budget->getBudgetLimit()->getCurrency()->getCode();
-
-            $budgetLimit->currency = $currency;
-            $categoryBudgetDTO->budgetLimit = $budgetLimit;
-
-            $categoryBudgetDTO->monthYear = $budget->getMonthYear();
-
-            $currentSpending = new MoneyDTO();
-            $currentSpending->amount = $budget->getCurrentSpending()->getAmount();
-
-            $currency = new CurrencyDTO();
-            $currency->code = $budget->getCurrentSpending()->getCurrency()->getCode();
-
-            $currentSpending->currency = $currency;
-            $categoryBudgetDTO->currentSpending = $currentSpending;
-
-            $categoryDTO->monthlyBudget = $categoryBudgetDTO;
+        foreach ($budgets as $budget) {
+            $budgetDTOs[] = $this->mapper->mapToModel($budget, AccessGroup::CATEGORY_READ);
         }
+
+        $categoryDTO->monthlyBudgets = $budgetDTOs;
 
         return $categoryDTO;
     }
 
-    private function getMonthlyBudget(CategoryDTO $categoryDTO): CategoryBudget
+    private function setDefaultMonthlyBudget(Category $category): void
     {
-        $budgetDTO = $categoryDTO->monthlyBudget;
+        $defaultBudget = new CategoryBudget();
 
-        $budgetLimit = new Money(
-            $budgetDTO->budgetLimit->amount,
-                new Currency($budgetDTO->budgetLimit->currency->code)
-        );
-
-        return (new CategoryBudget())
-            ->setBudgetLimit($budgetLimit)
+        $defaultBudget
+            ->setBudgetLimit(null)
             ->setCurrentSpending(new Money('0', new Currency(
                 $this->defaultCurrency
             )));
+
+        $category->addMonthlyBudget($defaultBudget);
     }
 }
