@@ -2,12 +2,16 @@
 
 namespace App\Manager;
 
+use App\DTO\CategoryBudgetDTO;
 use App\DTO\CurrencyDTO;
 use App\DTO\DTOInterface;
 use App\DTO\MoneyDTO;
 use App\DTO\PropertyDTO;
 use App\Entity\EntityInterface;
+use App\Repository\AbstractRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\EntityRepository;
 use Money\Money;
 use Random\RandomException;
 use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
@@ -24,8 +28,9 @@ class AutoMapper
      */
     public function mapToModel(
         EntityInterface $entity,
-        string $accessGroup
-    ): DTOInterface {
+        string          $accessGroup
+    ): DTOInterface
+    {
         $dto = $entity->getDTO();
 
         $props = $this->getPropertiesWithTypesAndGroups($dto, $accessGroup, false);
@@ -78,9 +83,10 @@ class AutoMapper
      */
     private function getPropertiesWithTypesAndGroups(
         DTOInterface $dto,
-        string $accessGroup,
-        bool $checkInitialized
-    ): array {
+        string       $accessGroup,
+        bool         $checkInitialized
+    ): array
+    {
         $serializerClassMetadataFactory = new ClassMetadataFactory(new AttributeLoader());
         $serializerExtractor = new SerializerExtractor($serializerClassMetadataFactory);
         $reflectionExtractor = new ReflectionExtractor();
@@ -93,7 +99,7 @@ class AutoMapper
 
         foreach ($props as $prop) {
             $refProperty = new \ReflectionProperty($dto::class, $prop);
-            if ($checkInitialized && ! $refProperty->isInitialized($dto)) {
+            if ($checkInitialized && !$refProperty->isInitialized($dto)) {
                 continue;
             }
             if ($refProperty->isPrivate()) {
@@ -105,8 +111,7 @@ class AutoMapper
             if (!$this->isMoneyObject($propertyType)) {
                 if (
                     $propertyType->getBuiltinType() === Type::BUILTIN_TYPE_OBJECT
-                    && ! enum_exists($propertyType->getClassName()) && new ($propertyType->getClassName())(
-                    ) instanceof DTOInterface
+                    && !enum_exists($propertyType->getClassName()) && new ($propertyType->getClassName())() instanceof DTOInterface
                 ) {
                     if ($checkInitialized) {
                         if ($dto->{$prop} !== null) {
@@ -125,13 +130,13 @@ class AutoMapper
 
     private function validateMethod(EntityInterface $entity, array $methods): ?string
     {
-        $availableMethods = array_filter($methods, static fn (string $method): bool => method_exists($entity, $method));
+        $availableMethods = array_filter($methods, static fn(string $method): bool => method_exists($entity, $method));
         if (count($availableMethods) > 1) {
             throw new \LogicException(sprintf('Entity class \'%s\' has multiple same methods - this is insane!', $entity::class));
         }
 
         $method = current($availableMethods);
-        if (! $method) {
+        if (!$method) {
             throw new \BadMethodCallException(sprintf('Entity class \'%s\' does not have any of the attempted methods. Available methods - \'%s\'. Attempted methods were: \'%s\'', $entity::class, implode(',', get_class_methods($entity)), implode(', ', $methods)));
         }
 
@@ -141,5 +146,87 @@ class AutoMapper
     private function isMoneyObject(Type $propertyType): bool
     {
         return $propertyType->getClassName() === 'Money\Money';
+    }
+
+    /**
+     * @throws \ReflectionException
+     */
+    public function mapToEntity(
+        DTOInterface     $dto,
+        string           $accessGroup,
+        ?EntityInterface $entity = null
+    ): EntityInterface
+    {
+        if (!$entity && isset($dto->id)) {
+            $entity = $this->getRepositoryObject($dto->getEntityObject()::class)->find($dto->id);
+            if (!$entity) {
+                throw new \LogicException(sprintf('Entity \'%s\' with id -%s not found', $dto->getEntityObject()::class, $dto->id));
+            }
+        }
+        $entity = $entity ?: $dto->getEntityObject();
+
+        $props = $this->getPropertiesWithTypesAndGroups($dto, $accessGroup, true);
+
+        /** @var PropertyDTO $property */
+        foreach ($props as $property) {
+            if (isset($dto->{$property->name})) {
+                $setter = $this->getSetterMethod($entity, $property->name);
+                $value = $dto->{$property->name};
+
+                if ($property->name === 'drugAlcoholTests' && is_array($value)) {
+                    $collection = new ArrayCollection();
+                    foreach ($value as $testDto) {
+                        $testEntity = $this->mapToEntity($testDto, $accessGroup);
+                        $collection->add($testEntity);
+                    }
+                    $entity->{$setter}($collection);
+                    continue;
+                }
+
+                if ($property->name === 'roles' && is_array($value)) {
+                    $entity->{$setter}($value);
+                    continue;
+                }
+
+                if (is_array($value)) {
+                    $valueArray = new ArrayCollection();
+                    foreach ($value as $item) {
+                        $valueArray->add($this->mapToEntity($item, $accessGroup));
+                    }
+                    $value = $valueArray;
+                } elseif ($property->transform) {
+                    $value = $property->transform->getTransform($value);
+                } elseif ($property->dto) {
+                    $nestedEntity = $entity->{$this->getGetterMethod($entity, $property->name)}();
+                    $value = $this->mapToEntity($value, $accessGroup, $nestedEntity);
+                    $entity->{$setter}($value);
+                }
+
+                $entity->{$setter}($value);
+            }
+        }
+
+        return $entity;
+    }
+
+    private function getRepository(): AbstractRepository
+    {
+        $exception = new \UnexpectedValueException('Repository not set on constructor');
+
+        return property_exists($this, 'repository') ? $this->repository ?? throw $exception : throw $exception;
+    }
+
+    private function getRepositoryObject(string $entityName): EntityRepository
+    {
+        return $this->getRepository()->getRepositoryObject($entityName);
+    }
+
+    private function getSetterMethod(EntityInterface $entity, string $property): ?string
+    {
+        $setters = [
+            'set' . ucfirst($property),
+        ];
+
+        return $this->validateMethod($entity, $setters);
     }
 }
