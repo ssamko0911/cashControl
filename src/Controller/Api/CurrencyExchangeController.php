@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Api;
 
 use App\Exception\CurrencyApiClientException;
 use App\Request\CurrencyApiRequest;
@@ -19,8 +19,9 @@ class CurrencyExchangeController extends AbstractController
 {
     public function __construct(
         private readonly CurrencyApiClient $apiClient,
-        private readonly LoggerInterface $logger
-    ) {
+        private readonly LoggerInterface   $logger
+    )
+    {
     }
 
     #[Route('/exchange', name: 'currencyExchange', methods: [Request::METHOD_GET])]
