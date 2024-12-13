@@ -11,6 +11,7 @@ use App\Entity\Account;
 use App\Entity\Category;
 use App\Entity\Transaction;
 use App\Repository\CategoryRepository;
+use App\Service\CurrencyExchangeService;
 use Money\Currency;
 use Money\Money;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -18,8 +19,9 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 final readonly class TransactionEntityBuilder
 {
     public function __construct(
-        private AccountEntityBuilder $accountEntityBuilder,
-        private CategoryRepository   $categoryRepository,
+        private AccountEntityBuilder    $accountEntityBuilder,
+        private CategoryRepository      $categoryRepository,
+        private CurrencyExchangeService $currencyExchangeService
     )
     {
     }
@@ -41,15 +43,17 @@ final readonly class TransactionEntityBuilder
             throw new NotFoundHttpException('Category not found');
         }
 
+        $money = new Money(
+            $dto->amount->amount,
+            new Currency($dto->amount->currency->code)
+        );
+
+        $newMoney = $this->currencyExchangeService->exchange($money);
+
         $transaction
             ->setAccount($account)
             ->setDescription($dto->description)
-            ->setAmount(
-                new Money(
-                    $dto->amount->amount,
-                    new Currency($dto->amount->currency->code)
-                )
-            )
+            ->setAmount($newMoney)
             ->setCategory($category)
             ->setType($dto->type);
 
