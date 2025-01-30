@@ -6,9 +6,10 @@ namespace App\Request;
 
 class CurrencyApiRequest
 {
-    public string $fromCurrency;
-
-    public string $toCurrency;
-
-    public float $amount;
+    public function __construct(
+        public string $fromCurrency,
+        public string $toCurrency,
+        public string $amount,
+    ) {
+    }
 }
