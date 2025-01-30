@@ -49,4 +49,10 @@ class TransactionDTO implements DTOInterface
         AccessGroup::TRANSACTION_EDIT,
     ])]
     public TransactionType $type;
+
+    #[Groups([
+        AccessGroup::TRANSACTION_READ,
+        AccessGroup::TRANSACTION_CREATE,
+    ])]
+    public CategoryDTO $category;
 }
