@@ -12,9 +12,12 @@ use Symfony\Component\Serializer\Attribute\Groups;
     AccessGroup::ACCOUNT_CREATE,
     AccessGroup::ACCOUNT_EDIT,
     AccessGroup::TRANSACTION_READ,
-    AccessGroup::TRANSACTION_CREATE
+    AccessGroup::TRANSACTION_CREATE,
 ])]
 final class CurrencyDTO
 {
-    public string $code;
+    public function __construct(
+        public string $code
+    ) {
+    }
 }

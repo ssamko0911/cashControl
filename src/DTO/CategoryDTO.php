@@ -17,6 +17,12 @@ use Symfony\Component\Serializer\Attribute\Groups;
 ])]
 final class CategoryDTO
 {
+    #[Groups([
+        AccessGroup::TRANSACTION_READ,
+        AccessGroup::TRANSACTION_CREATE,
+    ])]
+    public int $id;
+
     public string $name;
 
     public string $description;
