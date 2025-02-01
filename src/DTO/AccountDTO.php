@@ -7,6 +7,8 @@ namespace App\DTO;
 use App\Entity\Enum\AccountTypeEnum;
 use App\Security\AccessGroup;
 use DateTime;
+use Money\Money;
+use OpenApi\Attributes\Property;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -30,7 +32,7 @@ final class AccountDTO implements DTOInterface
     #[Groups([
         AccessGroup::ACCOUNT_READ,
         AccessGroup::ACCOUNT_CREATE,
-        AccessGroup::ACCOUNT_EDIT
+        AccessGroup::ACCOUNT_EDIT,
     ])]
     #[Assert\NotBlank(
         groups: [
@@ -44,11 +46,19 @@ final class AccountDTO implements DTOInterface
         AccessGroup::ACCOUNT_READ,
         AccessGroup::ACCOUNT_CREATE,
     ])]
-    public MoneyDTO $total;
+    #[Property(
+        property: "total",
+        properties: [
+            new Property(property: "amount", type: "string", example: "1000"),
+            new Property(property: "currency", type: "string", example: "GBP")
+        ],
+        type: "object"
+    )]
+    public Money $total;
 
     #[Groups([
         AccessGroup::ACCOUNT_READ,
-        AccessGroup::ACCOUNT_CREATE
+        AccessGroup::ACCOUNT_CREATE,
     ])]
     public AccountTypeEnum $accountType;
 
