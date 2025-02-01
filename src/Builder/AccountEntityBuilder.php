@@ -5,11 +5,7 @@ declare(strict_types=1);
 namespace App\Builder;
 
 use App\DTO\AccountDTO;
-use App\DTO\CurrencyDTO;
-use App\DTO\DTOInterface;
-use App\DTO\MoneyDTO;
 use App\Entity\Account;
-use App\Entity\EntityInterface;
 use Money\Currency;
 use Money\Money;
 
@@ -25,10 +21,7 @@ final readonly class AccountEntityBuilder
             ->setName($dto->name)
             ->setDescription($dto->description)
             ->setTotal(
-                new Money(
-                    $dto->total->amount,
-                    new Currency($dto->total->currency->code)
-                )
+                new Money($dto->total->getAmount(), new Currency($dto->total->getCurrency()->getCode()))
             )
             ->setAccountType($dto->accountType);
     }
@@ -44,13 +37,10 @@ final readonly class AccountEntityBuilder
         $dto->accountType = $entity->getAccountType();
         $dto->description = $entity->getDescription();
 
-        $currencyDto = new CurrencyDTO();
-        $currencyDto->code = $entity->getTotal()->getCurrency()->getCode();
-
-        $total = new MoneyDTO();
-        $total->amount = $entity->getTotal()->getAmount();
-
-        $total->currency = $currencyDto;
+        $total = new Money(
+            $entity->getTotal()->getAmount(),
+            new Currency($entity->getTotal()->getCurrency()->getCode())
+        );
 
         $dto->total = $total;
         $dto->createdAt = $entity->getCreatedAt();
