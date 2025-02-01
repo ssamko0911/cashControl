@@ -7,6 +7,7 @@ parameters:
     api_url: '%env(API_URL)%'
     api_key: '%env(API_KEY)%'
     default_currency: '%env(DEFAULT_CURRENCY)%'
+    default_locale: '%env(DEFAULT_LOCALE)%'
 
 services:
     # default configuration for services in *this* file
@@ -30,3 +31,6 @@ services:
         arguments:
             $apiUrl: '%api_url%'
             $apiKey: '%api_key%'
+
+    App\Serializer\MoneyNormalizer:
+        tags: [ 'serializer.normalizer' ]
